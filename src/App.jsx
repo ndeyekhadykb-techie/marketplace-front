@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
+import Catalog from './pages/Catalog'
 
 // On améliore la fonction pour qu'elle accepte "allowedRoles"
 function ProtectedRoute({ children, allowedRoles }) {
@@ -49,6 +50,14 @@ export default function App() {
           <div className="p-8 text-xl">Panneau d'administration</div>
         </ProtectedRoute>
       } />
+
+      {/* */}
+      <Route path="/catalog" element={
+        <ProtectedRoute>
+          <Catalog />
+        </ProtectedRoute>
+      } />
     </Routes>
+    
   )
 }
