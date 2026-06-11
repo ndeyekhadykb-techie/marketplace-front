@@ -3,6 +3,9 @@ import { useAuth } from './context/AuthContext'
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
 import HomePage from './pages/HomePage'
+import ProductsPage from './pages/products/ProductsPage'
+import CartPage from './pages/buyer/CartPage'
+
 
 // On améliore la fonction pour qu'elle accepte "allowedRoles"
 function ProtectedRoute({ children, allowedRoles }) {
@@ -52,7 +55,18 @@ export default function App() {
       } />
 
       {/* */}
-     
+      <Route path="/products" element={
+        <ProtectedRoute>
+           <ProductsPage/>
+        </ProtectedRoute>
+      } />
+
+      <Route path="/cart" element={
+        <ProtectedRoute allowedRoles={['buyer']}>
+          <CartPage />
+        </ProtectedRoute>
+      } />
+
     </Routes>
     
   )
