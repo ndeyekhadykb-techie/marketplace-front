@@ -3,7 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom'
 import { getProducts, getCategories } from '../../services/products'
 import { useCart } from '../../context/CartContext'
 import { useAuth } from '../../context/AuthContext'
-import { useToast } from '../../components/ui/Toast'
+import toast from 'react-hot-toast'
 import { PageLoader } from '../../components/ui/Spinner'
 import { ErrorMessage } from '../../components/ui/ErrorMessage'
 import { Layout } from '../../components/layout/Layout'
@@ -13,7 +13,6 @@ import { Layout } from '../../components/layout/Layout'
 function ProductCard({ product }) {
   const { addItem } = useCart()
   const { user } = useAuth()
-  const { toast, ToastContainer } = useToast()
   const [adding, setAdding] = useState(false)
 
   async function handleAddToCart(e) {
@@ -23,9 +22,9 @@ function ProductCard({ product }) {
     try {
       setAdding(true)
       await addItem(product.id)
-      toast('Ajouté au panier !', 'success')
+      toast.success('Ajouté au panier !')
     } catch {
-      toast("Erreur lors de l'ajout", 'error')
+      toast.error("Erreur lors de l'ajout")
     } finally {
       setAdding(false)
     }
@@ -33,7 +32,7 @@ function ProductCard({ product }) {
 
   return (
     <>
-      <ToastContainer />
+      
       <Link to={`/products/${product.id}`} className="group block">
         <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300">
           <div className="relative overflow-hidden h-48">
