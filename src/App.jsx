@@ -4,6 +4,12 @@ import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
 import HomePage from './pages/HomePage'
 import ProductsPage from './pages/products/ProductsPage'
+import DashboardPage from './pages/seller/DashboardPage'
+import ProductFormPage from './pages/seller/ProductFormPage'
+import MyProductsPage from './pages/seller/MyProductsPage'
+import SellerMessagePage from './pages/seller/SellerMessagePage'
+import SellerOrdersPage from './pages/seller/SellerOrdersPage'
+import { Toaster } from 'react-hot-toast'
 import CartPage from './pages/buyer/CartPage'
 
 
@@ -28,6 +34,8 @@ function ProtectedRoute({ children, allowedRoles }) {
 
 export default function App() {
   return (
+  <>
+    <Toaster position="top-right" />
     <Routes>
       {/* Routes publiques */}
       <Route path="/login" element={<Login />} />
@@ -36,38 +44,68 @@ export default function App() {
       {/* Route accessible à TOUS les utilisateurs connectés */}
       <Route path="/" element={
         <ProtectedRoute>
-           <HomePage/>
+          <HomePage />
         </ProtectedRoute>
       } />
 
-      {/* Route réservée uniquement aux vendeurs */}
+      {/* Routes vendeur */}
       <Route path="/seller/dashboard" element={
         <ProtectedRoute allowedRoles={['seller']}>
-          <div className="p-8 text-xl">Dashboard du Vendeur</div>
+          <DashboardPage />
+        </ProtectedRoute>
+      } />
+      <Route path="/seller/products/new" element={
+        <ProtectedRoute allowedRoles={['seller']}>
+          <ProductFormPage />
+        </ProtectedRoute>
+      } />
+      <Route path="/seller/products" element={
+        <ProtectedRoute allowedRoles={['seller']}>
+          <MyProductsPage />
+        </ProtectedRoute>
+      } />
+      <Route path="/seller/products/:id/edit" element={
+        <ProtectedRoute allowedRoles={['seller']}>
+          <ProductFormPage />
+        </ProtectedRoute>
+      } />
+      <Route path="/seller/messages" element={
+        <ProtectedRoute allowedRoles={['seller']}>
+          <SellerMessagePage />
         </ProtectedRoute>
       } />
 
-      {/* Route réservée uniquement aux admins */}
+
+      <Route path="/seller/orders" element={
+        <ProtectedRoute allowedRoles={['seller']}>
+          <SellerOrdersPage />
+        </ProtectedRoute>
+      } />
+
+      <Route path="/seller/products/:id/edit" element={
+        <ProtectedRoute allowedRoles={['seller']}>
+          <ProductFormPage />
+        </ProtectedRoute>
+      } />
+      {/* Route admin */}
       <Route path="/admin" element={
         <ProtectedRoute allowedRoles={['admin']}>
           <div className="p-8 text-xl">Panneau d'administration</div>
         </ProtectedRoute>
       } />
 
-      {/* */}
+      {/* Routes buyer */}
       <Route path="/products" element={
         <ProtectedRoute>
-           <ProductsPage/>
+          <ProductsPage />
         </ProtectedRoute>
       } />
-
       <Route path="/cart" element={
         <ProtectedRoute allowedRoles={['buyer']}>
           <CartPage />
         </ProtectedRoute>
       } />
-
     </Routes>
-    
-  )
+  </>
+)
 }
