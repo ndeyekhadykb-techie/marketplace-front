@@ -5,6 +5,10 @@ import Register from './pages/auth/Register'
 import HomePage from './pages/HomePage'
 import ProductsPage from './pages/products/ProductsPage'
 import CartPage from './pages/buyer/CartPage'
+import CheckoutPage from './pages/buyer/CheckoutPage'
+import OrdersPage from './pages/buyer/OrdersPage'
+import OrderDetailPage from './pages/buyer/OrderDetailPage'
+
 
 
 // On améliore la fonction pour qu'elle accepte "allowedRoles"
@@ -66,6 +70,25 @@ export default function App() {
           <CartPage />
         </ProtectedRoute>
       } />
+
+    <Route path="/checkout" element={
+      <ProtectedRoute allowedRoles={['buyer']}>
+        <CheckoutPage />
+      </ProtectedRoute>
+    } />
+
+    <Route path="/orders" element={
+      <ProtectedRoute allowedRoles={['buyer']}>
+        <OrdersPage />
+      </ProtectedRoute>
+    } />
+    
+    <Route path="/orders/:id" element={
+      <ProtectedRoute allowedRoles={['buyer']}>
+        <OrderDetailPage />
+      </ProtectedRoute>
+    } />
+
 
     </Routes>
     

@@ -31,14 +31,14 @@ export function CartProvider({ children }) {
 
   // Valeurs calculées à la volée depuis items
   const itemCount = state.items.reduce((sum, i) => sum + i.quantity, 0)
-  const total     = state.items.reduce((sum, i) => sum + i.price_at_add * i.quantity, 0)
+  const total     = state.items.reduce((sum, i) => sum + Number(i.subtotal), 0)
 
   // Récupère les items depuis l'API
   async function fetchCart() {
     dispatch({ type: 'SET_LOADING', payload: true })
     try {
-      const { data } = await client.get('/cart/items')
-      dispatch({ type: 'SET_ITEMS', payload: data.data ?? data })
+      const { data } = await client.get('/cart')
+      dispatch({ type: 'SET_ITEMS', payload: data.items ?? [] })
     } catch (err) {
       dispatch({ type: 'SET_ERROR', payload: err.response?.data?.message ?? 'Erreur panier' })
     }

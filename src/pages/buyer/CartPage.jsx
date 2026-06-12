@@ -102,10 +102,10 @@ export default function CartPage() {
                     {item.product?.title}
                   </h3>
                   <p className="text-amber-500 font-bold mt-1">
-                    {Number(item.price_at_add).toLocaleString('fr-FR')} FCFA
+                    {Number(item.product?.price).toLocaleString('fr-FR')} FCFA
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
-                    Sous-total : {Number(item.price_at_add * item.quantity).toLocaleString('fr-FR')} FCFA
+                    Sous-total : {Number(item.subtotal).toLocaleString('fr-FR')} FCFA
                   </p>
                 </div>
 

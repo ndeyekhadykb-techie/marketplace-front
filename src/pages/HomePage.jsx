@@ -171,8 +171,8 @@ function ProductCard({ product }) {
                 </span>
               )}
   
-              {/* Bouton panier */}
-              {user?.role === 'buyer' && product.quantity > 0 && (
+              {/* undefined ?? 1 signifie : si quantity n'existe pas, on suppose qu'il y en a */}
+              {user?.role === 'buyer' && (product.quantity ?? 1) > 0 && (
                 <button
                   onClick={handleAddToCart}
                   disabled={adding}
