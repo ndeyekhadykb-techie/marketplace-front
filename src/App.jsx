@@ -9,6 +9,7 @@ import ProductFormPage from './pages/seller/ProductFormPage'
 import MyProductsPage from './pages/seller/MyProductsPage'
 import SellerMessagePage from './pages/seller/SellerMessagePage'
 import SellerOrdersPage from './pages/seller/SellerOrdersPage'
+import SellerStatisticsPage from './pages/seller/SellerStatisticsPage'
 import { Toaster } from 'react-hot-toast'
 import CartPage from './pages/buyer/CartPage'
 import CheckoutPage from './pages/buyer/CheckoutPage'
@@ -91,6 +92,12 @@ export default function App() {
           <ProductFormPage />
         </ProtectedRoute>
       } />
+
+      <Route path="/seller/statistics" element={
+        <ProtectedRoute allowedRoles={['seller']}>
+          <SellerStatisticsPage />
+        </ProtectedRoute>
+     } />
       {/* Route admin */}
       <Route path="/admin" element={
         <ProtectedRoute allowedRoles={['admin']}>
