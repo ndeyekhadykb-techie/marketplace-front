@@ -10,6 +10,10 @@ import MyProductsPage from './pages/seller/MyProductsPage'
 import SellerMessagePage from './pages/seller/SellerMessagePage'
 import SellerOrdersPage from './pages/seller/SellerOrdersPage'
 import SellerStatisticsPage from './pages/seller/SellerStatisticsPage'
+import AdminDashboard from './pages/admin/AdminDashboard'
+import UsersPage from './pages/admin/UsersPage'
+import AdminProductsPage from './pages/admin/AdminProductsPage'
+import CouponsPage from './pages/admin/CouponsPage'
 import { Toaster } from 'react-hot-toast'
 import CartPage from './pages/buyer/CartPage'
 import CheckoutPage from './pages/buyer/CheckoutPage'
@@ -99,9 +103,24 @@ export default function App() {
         </ProtectedRoute>
      } />
       {/* Route admin */}
-      <Route path="/admin" element={
+            <Route path="/admin" element={
         <ProtectedRoute allowedRoles={['admin']}>
-          <div className="p-8 text-xl">Panneau d'administration</div>
+          <AdminDashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/admin/users" element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <UsersPage />
+        </ProtectedRoute>
+      } />
+      <Route path="/admin/products" element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <AdminProductsPage />
+        </ProtectedRoute>
+      } />
+      <Route path="/admin/coupons" element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <CouponsPage />
         </ProtectedRoute>
       } />
 
