@@ -2,14 +2,13 @@ import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useCart } from '../../context/CartContext'
 import { useAuth } from '../../context/AuthContext'
-import { useToast } from '../../components/ui/Toast'
+import toast from 'react-hot-toast'
 import { PageLoader } from '../../components/ui/Spinner'
 import { Layout } from '../../components/layout/Layout'
 
 export default function CartPage() {
   const { items, loading, fetchCart, updateItem, removeItem, clearCart, total } = useCart()
   const { user } = useAuth()
-  const { toast, ToastContainer } = useToast()
   const navigate = useNavigate()
 
   // On charge le panier depuis l'API au montage de la page
@@ -22,25 +21,25 @@ export default function CartPage() {
     try {
       await updateItem(cartItemId, newQuantity)
     } catch {
-      toast('Erreur lors de la mise à jour', 'error')
+      toast.error('Erreur lors de la mise à jour')
     }
   }
 
   async function handleRemove(cartItemId) {
     try {
       await removeItem(cartItemId)
-      toast('Produit retiré du panier', 'success')
+      toast.success('Produit retiré du panier')
     } catch {
-      toast('Erreur lors de la suppression', 'error')
+      toast.error('Erreur lors de la suppression')
     }
   }
 
   async function handleClear() {
     try {
       await clearCart()
-      toast('Panier vidé', 'success')
+      toast.success('Panier vidé')
     } catch {
-      toast('Erreur lors du vidage', 'error')
+      toast.error('Erreur lors du vidage')
     }
   }
 

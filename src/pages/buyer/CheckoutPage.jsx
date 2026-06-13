@@ -2,14 +2,13 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCart } from '../../context/CartContext'
 import { useAuth } from '../../context/AuthContext'
-import { useToast } from '../../components/ui/Toast'
+import toast from 'react-hot-toast'
 import { createOrder } from '../../services/orders'
 import { Layout } from '../../components/layout/Layout'
 
 export default function CheckoutPage() {
   const { items, total, clearCart } = useCart()
   const { user } = useAuth()
-  const { toast, ToastContainer } = useToast()
   const navigate = useNavigate()
 
   const [loading, setLoading] = useState(false)
@@ -73,11 +72,11 @@ export default function CheckoutPage() {
 
       // 3. Succès — on vide le panier et on redirige
       await clearCart()
-      toast('Commande passée avec succès !', 'success')
+      toast.success('Commande passée avec succès !')
       navigate(`/orders/${data.data?.id ?? data.id}`)
     } catch (err) {
       const message = err.response?.data?.message ?? 'Erreur lors de la commande'
-      toast(message, 'error')
+      toast.error(message)
     } finally {
       setLoading(false)
     }
@@ -111,7 +110,7 @@ export default function CheckoutPage() {
 
   return (
     <Layout>
-      <ToastContainer />
+      
 
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Finaliser la commande</h1>
@@ -220,9 +219,9 @@ export default function CheckoutPage() {
                     <span className="text-gray-400"> x{item.quantity}</span>
                   </span>
                   <span className="font-medium text-gray-800 flex-none">
-                    {Number(item.price_at_add * item.quantity).toLocaleString('fr-FR')} FCFA
+                    {Number(item.subtotal).toLocaleString('fr-FR')} FCFA
                   </span>
-                </div>
+                                    </div>
               ))}
             </div>
 
