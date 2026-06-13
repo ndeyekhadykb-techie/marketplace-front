@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import client from '../../api/client'
+import { FiFileText } from 'react-icons/fi'
 
 export default function SellerOrdersPage() {
   const [orders, setOrders] = useState([])
@@ -34,7 +35,7 @@ export default function SellerOrdersPage() {
   }
 
   const statusConfig = {
-    pending:   { label: 'En attente',  classes: 'bg-amber-50 text-amber-600 border-amber-100' },
+    pending:   { label: 'En attente',   classes: 'bg-amber-50 text-amber-600 border-amber-100' },
     shipped:   { label: 'Expédié',     classes: 'bg-blue-50 text-blue-600 border-blue-100' },
     delivered: { label: 'Livré',       classes: 'bg-green-50 text-green-600 border-green-100' },
     cancelled: { label: 'Annulé',      classes: 'bg-gray-100 text-gray-500 border-gray-200' },
@@ -60,8 +61,8 @@ export default function SellerOrdersPage() {
             Chargement des commandes...
           </div>
         ) : orders.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm text-center py-16">
-            <span className="text-5xl block mb-4">🧾</span>
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm text-center py-16 flex flex-col items-center justify-center gap-3">
+            <FiFileText size={48} className="text-gray-300" />
             <p className="text-gray-500 font-medium">Aucune commande reçue pour le moment.</p>
           </div>
         ) : (
@@ -108,7 +109,7 @@ export default function SellerOrdersPage() {
                     )}
 
                     {/* Total */}
-                    <p className="text-lg font-black text-red-500">
+                    <p style={{ color: '#F5A623' }} className="text-lg font-black">
                       {parseFloat(order.total_amount || 0).toLocaleString()} FCFA
                     </p>
                   </div>
@@ -117,9 +118,10 @@ export default function SellerOrdersPage() {
                   {order.status !== 'delivered' && order.status !== 'cancelled' && (
                     <button
                       onClick={() => handleUpdateStatus(order.id, order.status)}
-                      className="px-5 py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-xs font-semibold rounded-xl transition-colors shadow-sm whitespace-nowrap"
+                      style={{ backgroundColor: '#F5A623' }}
+                      className="px-5 py-2.5 hover:opacity-90 text-white text-xs font-semibold rounded-xl transition-colors shadow-sm whitespace-nowrap"
                     >
-                      {order.status === 'pending' ? '📦 Marquer expédié' : '✅ Marquer livré'}
+                      {order.status === 'pending' ? 'Marquer expédié' : 'Marquer livré'}
                     </button>
                   )}
 

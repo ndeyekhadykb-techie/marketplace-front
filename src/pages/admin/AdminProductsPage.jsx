@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import client from '../../api/client'
+import { FiPackage, FiImage, FiCheck, FiEdit2, FiTrash2 } from 'react-icons/fi'
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState([])
@@ -55,17 +56,17 @@ export default function AdminProductsPage() {
       <div className="bg-white border-b border-gray-100 px-6 py-5">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-2xl font-bold text-gray-900">Modération produits</h1>
-          <p className="text-sm text-gray-400 mt-1">Gérez et modérez les produits de la marketplace.</p>
+          <p className="text-sm text-gray-400 mt-1">Gerez et modérez les produits de la marketplace.</p>
         </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-8">
         {loading ? (
-          <div className="text-center py-16 text-gray-400">Chargement...</div>
+          <div className="text-center py-16 text-gray-400 text-sm">Chargement...</div>
         ) : products.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm text-center py-16">
-            <span className="text-5xl block mb-4">📦</span>
-            <p className="text-gray-500">Aucun produit trouvé.</p>
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm text-center py-16 flex flex-col items-center justify-center gap-3">
+            <FiPackage size={48} className="text-gray-300" />
+            <p className="text-gray-500 font-medium">Aucun produit trouvé.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
@@ -79,13 +80,13 @@ export default function AdminProductsPage() {
                     {product.image ? (
                       <img src={product.image} alt={product.title} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-4xl">📱</span>
+                      <FiImage size={36} className="text-gray-300" />
                     )}
                   </div>
 
                   <div className="p-4 flex flex-col flex-1 gap-3">
                     <div>
-                      <h3 className="font-bold text-gray-900 truncate">{product.title}</h3>
+                      <h3 className="font-bold text-gray-900 truncate text-sm">{product.title}</h3>
                       <p className="text-xs text-gray-400 mt-1">
                         Vendeur : {product.seller?.name || 'Inconnu'}
                       </p>
@@ -104,23 +105,23 @@ export default function AdminProductsPage() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleUpdateStatus(product.id, 'published')}
-                        className="flex-1 py-2 bg-green-50 hover:bg-green-100 text-green-600 rounded-xl text-xs font-semibold transition-colors"
+                        className="flex-1 py-2 bg-green-50 hover:bg-green-100 text-green-600 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 transition-colors"
                       >
-                        ✅ Publier
+                        <FiCheck size={14} /> Publier
                       </button>
                       <button
                         onClick={() => handleUpdateStatus(product.id, 'draft')}
-                        className="flex-1 py-2 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-xl text-xs font-semibold transition-colors"
+                        className="flex-1 py-2 bg-gray-50 hover:bg-orange-50/60 hover:text-gray-900 text-gray-600 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 transition-colors"
                       >
-                        📝 Brouillon
+                        <FiEdit2 size={12} /> Brouillon
                       </button>
                     </div>
 
                     <button
                       onClick={() => handleDelete(product.id, product.title)}
-                      className="w-full py-2 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl text-xs font-semibold transition-colors"
+                      className="w-full py-2 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 transition-colors"
                     >
-                      🗑️ Supprimer définitivement
+                      <FiTrash2 size={14} /> Supprimer définitivement
                     </button>
                   </div>
                 </div>

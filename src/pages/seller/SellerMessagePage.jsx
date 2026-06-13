@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import client from '../../api/client'
+import { FiMessageSquare } from 'react-icons/fi'
 
 export default function SellerMessagePage() {
   const [conversations, setConversations] = useState([])
@@ -95,8 +96,8 @@ export default function SellerMessagePage() {
                   Chargement...
                 </div>
               ) : conversations.length === 0 ? (
-                <div className="p-6 text-center text-gray-400 text-sm">
-                  <span className="text-3xl block mb-2">💬</span>
+                <div className="p-6 text-center text-gray-400 flex flex-col items-center justify-center gap-2 text-sm">
+                  <FiMessageSquare size={32} className="text-gray-300" />
                   Aucune conversation
                 </div>
               ) : (
@@ -109,16 +110,20 @@ export default function SellerMessagePage() {
                       onClick={() => setActiveConv(conv)}
                       className={`w-full p-4 text-left flex flex-col gap-1 border-b border-gray-50 transition-colors ${
                         isActive
-                          ? 'bg-red-50 border-l-4 border-l-red-500'
+                          ? 'bg-orange-50/60 border-l-4'
                           : 'hover:bg-gray-50'
                       }`}
+                      style={isActive ? { borderLeftColor: '#F5A623' } : {}}
                     >
                       <div className="flex justify-between items-center">
                         <span className="font-semibold text-gray-900 text-sm">
                           {other.name || 'Utilisateur'}
                         </span>
                         {conv.unread_count > 0 && (
-                          <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                          <span 
+                            style={{ backgroundColor: '#F5A623' }} 
+                            className="text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold"
+                          >
                             {conv.unread_count}
                           </span>
                         )}
@@ -139,7 +144,10 @@ export default function SellerMessagePage() {
               <>
                 {/* Header chat */}
                 <div className="p-4 border-b border-gray-100 bg-white flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-red-100 flex items-center justify-center text-red-500 font-bold text-sm">
+                  <div 
+                    style={{ backgroundColor: '#FFF6E6', color: '#F5A623' }} 
+                    className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm"
+                  >
                     {(activeConv.other_user?.name || 'U')[0].toUpperCase()}
                   </div>
                   <div>
@@ -166,11 +174,14 @@ export default function SellerMessagePage() {
                           key={i}
                           className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}
                         >
-                          <div className={`max-w-[70%] px-4 py-2.5 rounded-2xl text-sm ${
-                            isMine
-                              ? 'bg-red-500 text-white rounded-br-none'
-                              : 'bg-white border border-gray-200 text-gray-800 rounded-bl-none shadow-sm'
-                          }`}>
+                          <div 
+                            style={isMine ? { backgroundColor: '#F5A623' } : {}}
+                            className={`max-w-[70%] px-4 py-2.5 rounded-2xl text-sm ${
+                              isMine
+                                ? 'text-white rounded-br-none'
+                                : 'bg-white border border-gray-200 text-gray-800 rounded-bl-none shadow-sm'
+                            }`}
+                          >
                             {msg.message}
                           </div>
                         </div>
@@ -190,12 +201,14 @@ export default function SellerMessagePage() {
                     value={replyText}
                     onChange={e => setReplyText(e.target.value)}
                     placeholder="Écrivez votre réponse..."
-                    className="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-colors"
+                    className="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 transition-colors"
+                    style={{ '--tw-ring-color': 'rgba(245, 166, 35, 0.2)', focusBorderColor: '#F5A623' }}
                   />
                   <button
                     type="submit"
                     disabled={sending || !replyText.trim()}
-                    className="px-5 py-2.5 bg-red-500 hover:bg-red-600 disabled:bg-gray-200 disabled:text-gray-400 text-white font-semibold rounded-xl text-sm transition-colors"
+                    style={(!sending && replyText.trim()) ? { backgroundColor: '#F5A623' } : {}}
+                    className="px-5 py-2.5 disabled:bg-gray-200 disabled:text-gray-400 text-white font-semibold rounded-xl text-sm transition-colors hover:opacity-90"
                   >
                     {sending ? '...' : 'Envoyer'}
                   </button>
@@ -203,7 +216,7 @@ export default function SellerMessagePage() {
               </>
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center text-gray-400 gap-2">
-                <span className="text-4xl">💬</span>
+                <FiMessageSquare size={40} className="text-gray-300" />
                 <p className="text-sm">Sélectionnez une conversation</p>
               </div>
             )}

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import client from '../../api/client'
+import { FiDollarSign, FiPackage, FiShoppingBag, FiClipboard, FiMessageSquare, FiBarChart2 } from 'react-icons/fi'
 
 export default function DashboardPage() {
   const { user } = useAuth()
@@ -30,24 +31,31 @@ export default function DashboardPage() {
     {
       label: "Chiffre d'affaires",
       value: loading ? '...' : `${stats.total_sales?.toLocaleString() || 0} FCFA`,
-      icon: '💰',
+      icon: <FiDollarSign size={22} className="text-green-600" />,
       bg: 'bg-green-50',
       border: 'border-green-100'
     },
     {
       label: 'Produits en ligne',
       value: loading ? '...' : `${stats.products_count || 0} articles`,
-      icon: '📦',
+      icon: <FiPackage size={22} className="text-orange-500" />,
       bg: 'bg-orange-50',
       border: 'border-orange-100'
     },
     {
       label: 'Commandes à traiter',
       value: loading ? '...' : `${stats.pending_orders_count || 0} en attente`,
-      icon: '🛒',
-      bg: 'bg-red-50',
-      border: 'border-red-100'
+      icon: <FiShoppingBag size={22} className="text-yellow-500" />,
+      bg: 'bg-yellow-50',
+      border: 'border-yellow-100'
     }
+  ]
+
+  const actions = [
+    { label: 'Mes produits', to: '/seller/products', icon: <FiPackage size={22} /> },
+    { label: 'Commandes', to: '/seller/orders', icon: <FiClipboard size={22} /> },
+    { label: 'Messages', to: '/seller/messages', icon: <FiMessageSquare size={22} /> },
+    { label: 'Statistiques', to: '/seller/statistics', icon: <FiBarChart2 size={22} /> },
   ]
 
   return (
@@ -58,7 +66,7 @@ export default function DashboardPage() {
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              Bonjour, <span className="text-red-500">{user?.name || 'Vendeur'}</span> 
+              Bonjour, <span className="text-yellow-500">{user?.name || 'Vendeur'}</span>
             </h1>
             <p className="text-sm text-gray-400 mt-1">
               Suivez vos ventes et gérez vos produits
@@ -66,7 +74,7 @@ export default function DashboardPage() {
           </div>
           <Link
             to="/seller/products/new"
-            className="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold px-5 py-3 rounded-xl transition-colors text-center"
+            className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 text-sm font-semibold px-5 py-3 rounded-xl transition-colors text-center"
           >
             + Ajouter un produit
           </Link>
@@ -86,7 +94,7 @@ export default function DashboardPage() {
                 <p className="text-sm text-gray-400 mb-1">{card.label}</p>
                 <p className="text-xl font-bold text-gray-900">{card.value}</p>
               </div>
-              <div className={`${card.bg} text-2xl p-3 rounded-xl`}>
+              <div className={`${card.bg} p-3 rounded-xl`}>
                 {card.icon}
               </div>
             </div>
@@ -99,19 +107,14 @@ export default function DashboardPage() {
             Actions rapides
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {[
-              { label: 'Mes produits', to: '/seller/products', icon: '📦' },
-              { label: 'Commandes', to: '/seller/orders', icon: '🧾' },
-              { label: 'Messages', to: '/seller/messages', icon: '💬' },
-              { label: 'Statistiques', to: '/seller/statistics', icon: '📊' },
-            ].map((action, i) => (
+            {actions.map((action, i) => (
               <Link
                 key={i}
                 to={action.to}
-                className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-red-200 hover:bg-red-50 transition-colors text-center"
+                className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:border-yellow-300 hover:bg-yellow-50 transition-colors text-center text-gray-600"
               >
-                <span className="text-2xl">{action.icon}</span>
-                <span className="text-xs font-medium text-gray-600">{action.label}</span>
+                {action.icon}
+                <span className="text-xs font-medium">{action.label}</span>
               </Link>
             ))}
           </div>

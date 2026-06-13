@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import client from '../../api/client'
+import { FiPercent } from 'react-icons/fi'
 
 export default function CouponsPage() {
   const [coupons, setCoupons] = useState([])
@@ -70,7 +71,8 @@ export default function CouponsPage() {
           </div>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold px-5 py-3 rounded-xl transition-colors"
+            style={showForm ? { backgroundColor: '#E5E7EB', color: '#374151' } : { backgroundColor: '#F5A623' }}
+            className="text-white text-sm font-semibold px-5 py-3 rounded-xl transition-colors hover:opacity-90"
           >
             {showForm ? 'Annuler' : '+ Nouveau coupon'}
           </button>
@@ -79,7 +81,6 @@ export default function CouponsPage() {
 
       <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
 
-        {/* Formulaire création */}
         {showForm && (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
             <h2 className="text-base font-semibold text-gray-900 mb-4">Créer un coupon</h2>
@@ -89,7 +90,8 @@ export default function CouponsPage() {
                 <input
                   type="text" name="code" value={formData.code} onChange={handleChange}
                   placeholder="Ex: PROMO20"
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 transition-colors"
+                  style={{ '--tw-ring-color': 'rgba(245, 166, 35, 0.2)', focusBorderColor: '#F5A623' }}
                   required
                 />
               </div>
@@ -97,7 +99,8 @@ export default function CouponsPage() {
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Type de réduction *</label>
                 <select
                   name="discount_type" value={formData.discount_type} onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 transition-colors"
+                  style={{ '--tw-ring-color': 'rgba(245, 166, 35, 0.2)', focusBorderColor: '#F5A623' }}
                 >
                   <option value="percentage">Pourcentage (%)</option>
                   <option value="fixed">Montant fixe (FCFA)</option>
@@ -108,7 +111,8 @@ export default function CouponsPage() {
                 <input
                   type="number" name="discount_value" value={formData.discount_value} onChange={handleChange}
                   placeholder="Ex: 20"
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 transition-colors"
+                  style={{ '--tw-ring-color': 'rgba(245, 166, 35, 0.2)', focusBorderColor: '#F5A623' }}
                   required
                 />
               </div>
@@ -117,7 +121,8 @@ export default function CouponsPage() {
                 <input
                   type="number" name="min_order_amount" value={formData.min_order_amount} onChange={handleChange}
                   placeholder="Ex: 5000"
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 transition-colors"
+                  style={{ '--tw-ring-color': 'rgba(245, 166, 35, 0.2)', focusBorderColor: '#F5A623' }}
                 />
               </div>
               <div>
@@ -125,20 +130,23 @@ export default function CouponsPage() {
                 <input
                   type="number" name="max_uses" value={formData.max_uses} onChange={handleChange}
                   placeholder="Ex: 100"
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 transition-colors"
+                  style={{ '--tw-ring-color': 'rgba(245, 166, 35, 0.2)', focusBorderColor: '#F5A623' }}
                 />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Date d'expiration</label>
                 <input
                   type="date" name="expires_at" value={formData.expires_at} onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 transition-colors"
+                  style={{ '--tw-ring-color': 'rgba(245, 166, 35, 0.2)', focusBorderColor: '#F5A623' }}
                 />
               </div>
               <div className="sm:col-span-2 flex justify-end">
                 <button
                   type="submit"
-                  className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl text-sm transition-colors"
+                  style={{ backgroundColor: '#F5A623' }}
+                  className="px-6 py-3 hover:opacity-90 text-white font-semibold rounded-xl text-sm transition-colors"
                 >
                   Créer le coupon
                 </button>
@@ -149,11 +157,11 @@ export default function CouponsPage() {
 
         {/* Liste coupons */}
         {loading ? (
-          <div className="text-center py-16 text-gray-400">Chargement...</div>
+          <div className="text-center py-16 text-gray-400 text-sm">Chargement...</div>
         ) : coupons.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm text-center py-16">
-            <span className="text-5xl block mb-4">🎟️</span>
-            <p className="text-gray-500">Aucun coupon créé pour le moment.</p>
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm text-center py-16 flex flex-col items-center justify-center gap-3">
+            <FiPercent size={48} className="text-gray-300" />
+            <p className="text-gray-500 font-medium">Aucun coupon créé pour le moment.</p>
           </div>
         ) : (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
@@ -171,7 +179,10 @@ export default function CouponsPage() {
                 {coupons.map((coupon) => (
                   <tr key={coupon.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4">
-                      <span className="font-mono font-bold text-red-500 bg-red-50 px-2.5 py-1 rounded-lg text-sm">
+                      <span 
+                        style={{ color: '#F5A623', backgroundColor: 'rgba(245, 166, 35, 0.08)' }} 
+                        className="font-mono font-bold px-2.5 py-1 rounded-lg text-sm"
+                      >
                         {coupon.code}
                       </span>
                     </td>
@@ -192,7 +203,7 @@ export default function CouponsPage() {
                         onClick={() => handleDelete(coupon.id, coupon.code)}
                         className="text-xs font-semibold px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-500 rounded-lg transition-colors"
                       >
-                        🗑️ Supprimer
+                        Supprimer
                       </button>
                     </td>
                   </tr>

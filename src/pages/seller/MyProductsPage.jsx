@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-hot-toast'
 import client from '../../api/client'
+import { FiEdit2, FiTrash2 } from 'react-icons/fi'
 
 export default function MyProductsPage() {
   const [products, setProducts] = useState([])
@@ -48,7 +49,8 @@ export default function MyProductsPage() {
           </div>
           <Link
             to="/seller/products/new"
-            className="bg-red-500 hover:bg-red-600 text-white font-semibold text-sm px-5 py-3 rounded-xl transition-colors"
+            style={{ backgroundColor: '#F5A623' }}
+            className="hover:opacity-90 text-white font-semibold text-sm px-5 py-3 rounded-xl transition-colors"
           >
             + Nouveau produit
           </Link>
@@ -67,7 +69,8 @@ export default function MyProductsPage() {
             <p className="font-medium text-gray-500">Aucun produit en vente pour le moment.</p>
             <Link
               to="/seller/products/new"
-              className="inline-block mt-4 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold px-5 py-3 rounded-xl transition-colors"
+              style={{ backgroundColor: '#F5A623' }}
+              className="inline-block mt-4 hover:opacity-90 text-white text-sm font-semibold px-5 py-3 rounded-xl transition-colors"
             >
               + Ajouter votre premier produit
             </Link>
@@ -83,7 +86,7 @@ export default function MyProductsPage() {
                 <div className="h-44 bg-gray-50 rounded-t-2xl overflow-hidden border-b border-gray-100 flex items-center justify-center">
                   {product.image ? (
                     <img
-                     src={product.image?.replace('http://localhost/', 'http://localhost:8000/')}
+                      src={product.image?.replace('http://localhost/', 'http://localhost:8000/')}
                       alt={product.title}
                       className="w-full h-full object-cover"
                     />
@@ -112,15 +115,15 @@ export default function MyProductsPage() {
                   <div className="grid grid-cols-2 gap-2 pt-3 border-t border-gray-100">
                     <Link
                       to={`/seller/products/${product.id}/edit`}
-                      className="text-center py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl text-xs font-semibold transition-colors border border-gray-100"
+                      className="flex items-center justify-center gap-1.5 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl text-xs font-semibold transition-colors border border-gray-100"
                     >
-                      ✏️ Modifier
+                      <FiEdit2 size={14} /> Modifier
                     </Link>
                     <button
                       onClick={() => handleDelete(product.id, product.title)}
-                      className="py-2 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl text-xs font-semibold transition-colors"
+                      className="flex items-center justify-center gap-1.5 py-2 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl text-xs font-semibold transition-colors"
                     >
-                      🗑️ Supprimer
+                      <FiTrash2 size={14} /> Supprimer
                     </button>
                   </div>
                 </div>

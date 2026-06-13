@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import client from '../../api/client'
+import { FiTrash2 } from 'react-icons/fi'
 
 export default function ProductFormPage() {
   const navigate = useNavigate()
   const { id } = useParams() // si id existe → mode édition, sinon → mode création
   
-console.log('ID récupéré:', id)
+  console.log('ID récupéré:', id)
   const isEditing = !!id
 
   const [loading, setLoading] = useState(false)
@@ -52,10 +53,10 @@ console.log('ID récupéré:', id)
         })
         if (p.image) setPreview(p.image)
       } catch (err) {
-  console.error('Status:', err.response?.status)
-  console.error('Data:', err.response?.data)
-  setError('Impossible de charger le produit.')
-} finally {
+        console.error('Status:', err.response?.status)
+        console.error('Data:', err.response?.data)
+        setError('Impossible de charger le produit.')
+      } finally {
         setFetching(false)
       }
     }
@@ -164,8 +165,10 @@ console.log('ID récupéré:', id)
                   <button
                     type="button"
                     onClick={() => { setPreview(null); setProductImage(null) }}
-                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-xs font-bold"
-                  >✕</button>
+                    className="absolute top-2 right-2 bg-red-50 hover:bg-red-100 text-red-500 border border-red-100 rounded-xl p-2 flex items-center justify-center transition-colors shadow-sm"
+                  >
+                    <FiTrash2 size={16} />
+                  </button>
                 </div>
               ) : (
                 <input
@@ -234,7 +237,8 @@ console.log('ID récupéré:', id)
             </button>
             <button
               type="submit" onClick={handleSubmit} disabled={loading}
-              className="px-5 py-2.5 bg-red-500 hover:bg-red-600 disabled:bg-gray-300 text-white font-semibold rounded-xl text-sm transition-colors shadow-sm"
+              style={{ backgroundColor: '#F5A623' }}
+              className="px-5 py-2.5 disabled:bg-gray-300 text-white font-semibold rounded-xl text-sm transition-colors shadow-sm hover:opacity-90"
             >
               {loading ? 'Enregistrement...' : isEditing ? 'Enregistrer' : 'Publier le produit'}
             </button>
