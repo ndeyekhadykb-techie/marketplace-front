@@ -7,6 +7,43 @@ import toast from 'react-hot-toast'
 import { PageLoader } from '../../components/ui/Spinner'
 import { ErrorMessage } from '../../components/ui/ErrorMessage'
 import { Layout } from '../../components/layout/Layout'
+import { addFavorite, removeFavorite } from '../../services/favorites' // ProductsPage
+
+
+function FavoriteButton({ productId }) {
+  const [isFav, setIsFav] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  async function toggle(e) {
+    e.preventDefault()
+    try {
+      setLoading(true)
+      if (isFav) {
+        await removeFavorite(productId)
+        toast.success('Retiré des favoris')
+      } else {
+        await addFavorite(productId)
+        toast.success('Ajouté aux favoris !')
+      }
+      setIsFav(prev => !prev)
+    } catch {
+      toast.error('Erreur')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <button
+      onClick={toggle}
+      disabled={loading}
+      className="absolute top-3 right-3 w-8 h-8 bg-white/90 hover:bg-red-50
+        rounded-full flex items-center justify-center shadow-sm transition-colors"
+    >
+      {isFav ? '❤️' : '🤍'}
+    </button>
+  )
+}
 
 // ─── ProductCard ──────────────────────────────────────────────────────────────
 // On réutilise le même style que HomePage
@@ -36,9 +73,8 @@ function ProductCard({ product }) {
       <Link to={`/products/${product.id}`} className="group block">
         <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-300">
           <div className="relative overflow-hidden h-48">
-            <img
-              src={product.image ?? 'https://placehold.co/400x300?text=Produit'}
-              alt={product.title}
+          <img
+              src={(product.image ?? '').replace('http://localhost/', 'http://localhost:8000/') || 'https://placehold.co/400x300?text=Produit'}              alt={product.title}
               onError={e => { e.target.src = 'https://placehold.co/400x300?text=Produit' }}
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
@@ -48,6 +84,11 @@ function ProductCard({ product }) {
               <span className="absolute top-3 left-3 bg-amber-400 text-white text-xs font-bold px-2 py-1 rounded-full">
                 Promo
               </span>
+            )}
+
+            {/* Bouton favori — à ajouter */}
+            {user?.role === 'buyer' && (
+              <FavoriteButton productId={product.id} />
             )}
 
             {/* undefined ?? 1 signifie : si quantity n'existe pas, on suppose qu'il y en a */}
@@ -131,7 +172,6 @@ export default function ProductsPage() {
         sort:        currentSort     || undefined,
         min_price:   currentMin      || undefined,
         max_price:   currentMax      || undefined,
-        status:      'published',
       })
       setProducts(data.data ?? data)
       setPagination(data.pagination ?? null)

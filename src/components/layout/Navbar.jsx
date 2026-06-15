@@ -64,20 +64,26 @@ export function Navbar() {
             <>
               {/* Icône panier — visible uniquement pour l'acheteur */}
               {user.role === 'buyer' && (
-                <Link
-                  to="/cart"
-                  className="relative p-2 text-gray-600 hover:text-amber-500 transition-colors"
-                >
-                  🛒
-                  {/* Badge avec le nombre d'articles */}
-                  {itemCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-amber-400 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
-                      {itemCount}
-                    </span>
-                  )}
-                </Link>
+                <>
+                  <Link
+                    to="/favorites"
+                    className="p-2 text-gray-600 hover:text-amber-500 transition-colors"
+                  >
+                    ❤️
+                  </Link>
+                  <Link
+                    to="/cart"
+                    className="relative p-2 text-gray-600 hover:text-amber-500 transition-colors"
+                  >
+                    🛒
+                    {itemCount > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-amber-400 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                        {itemCount}
+                      </span>
+                    )}
+                  </Link>
+                </>
               )}
-
               {/* Avatar avec la première lettre du nom */}
               <Link
                 to="/profile"

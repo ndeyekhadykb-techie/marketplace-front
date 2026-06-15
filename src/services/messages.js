@@ -7,8 +7,9 @@ export const getConversations = () =>
 
 // Récupère tous les messages échangés avec un utilisateur précis
 // userId = l'id de l'autre personne dans la conversation
-export const getMessages = (userId) =>
-  client.get(`/messages/${userId}`)
+export const getMessages = (userId) => 
+  client.get(`/messages/with/${userId}`)
+
 
 // Envoie un nouveau message
 // payload contient : { recipient_id, content, product_id? }

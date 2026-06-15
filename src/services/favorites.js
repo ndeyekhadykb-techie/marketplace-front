@@ -5,8 +5,8 @@ export const getFavorites = () =>
   client.get('/favorites')
 
 // Ajoute un produit aux favoris
-export const addFavorite = (productId) =>
-  client.post('/favorites', { product_id: productId })
+export  const addFavorite    = (productId) => 
+        client.post('/favorites/add', { product_id: productId })
 
 // Retire un produit des favoris
 export const removeFavorite = (productId) =>

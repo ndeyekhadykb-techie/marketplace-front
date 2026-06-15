@@ -19,6 +19,10 @@ import CartPage from './pages/buyer/CartPage'
 import CheckoutPage from './pages/buyer/CheckoutPage'
 import OrdersPage from './pages/buyer/OrdersPage'
 import OrderDetailPage from './pages/buyer/OrderDetailPage'
+import FavoritesPage from './pages/buyer/FavoritesPage'
+import MessagesPage from './pages/buyer/MessagesPage'
+import ProductDetailPage from './pages/products/ProductDetailPage'
+
 
 
 
@@ -152,6 +156,24 @@ export default function App() {
     <Route path="/orders/:id" element={
       <ProtectedRoute allowedRoles={['buyer']}>
         <OrderDetailPage />
+      </ProtectedRoute>
+    } />
+
+    <Route path="/favorites" element={
+      <ProtectedRoute allowedRoles={['buyer']}>
+        <FavoritesPage />
+      </ProtectedRoute>
+    } />
+
+    <Route path="/messages" element={
+      <ProtectedRoute allowedRoles={['buyer']}>
+        <MessagesPage />
+      </ProtectedRoute>
+    } />
+
+    <Route path="/products/:id" element={
+      <ProtectedRoute>
+        <ProductDetailPage />
       </ProtectedRoute>
     } />
 

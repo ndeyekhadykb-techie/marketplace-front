@@ -23,5 +23,8 @@ export const getSellerOrders = () =>
 
 // Met à jour le statut d'un article de commande
 // status peut être : 'pending' | 'shipped' | 'delivered'
-export const updateOrderItemStatus = (itemId, status) =>
-  client.put(`/seller/order-items/${itemId}`, { status })
+export const updateOrderItemStatus = (orderId, status) =>
+  client.put(`/orders/${orderId}/status`, { status })
+
+export const cancelOrder = (orderId) =>
+   client.post(`/orders/${orderId}/cancel`)

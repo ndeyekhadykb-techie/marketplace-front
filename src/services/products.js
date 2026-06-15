@@ -23,8 +23,10 @@ export const search = (q, type = 'all') =>
 // ── Vendeur ───────────────────────────────────────────────────────────────────
 
 // Récupère les produits du vendeur connecté
-export const getMyProducts = (params) =>
+export const getMyProducts = (params) => 
   client.get('/products/my-products', { params })
+
+
 
 // Crée un produit (avec image donc multipart/form-data)
 export const createProduct = (formData) =>
@@ -42,3 +44,12 @@ export const updateProduct = (id, formData) =>
 // Supprime un produit
 export const deleteProduct = (id) =>
   client.delete(`/products/${id}`)
+
+export const getTopSelling = () =>
+   client.get('/products/top-selling')
+
+export const isFavorite = (productId) => 
+  client.get(`/products/${productId}/is-favorite`)
+
+export const addReview = (productId, data) => 
+  client.post(`/products/${productId}/reviews`, data)

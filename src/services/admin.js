@@ -18,18 +18,20 @@ export const suspendUser = (id) =>
   client.post(`/admin/users/${id}/suspend`)
 
 // Réactive un utilisateur suspendu
-export const reactivateUser = (id) =>
-  client.post(`/admin/users/${id}/reactivate`)
+export const reactivateUser = (id) => 
+  client.post(`/admin/users/${id}/activate`)
 
 // ── Produits ──────────────────────────────────────────────────────────────────
 
 // Force le statut d'un produit (published, inactive, sold...)
 export const forceProductStatus = (id, status) =>
-  client.put(`/admin/products/${id}`, { status })
+  client.patch(`/admin/products/${id}/status`, { status })
+
 
 // Supprime définitivement un produit
-export const forceDeleteProduct = (id) =>
-  client.delete(`/admin/products/${id}`)
+export const forceDeleteProduct = (id) => 
+  client.delete(`/admin/products/${id}/force`)
+
 
 // ── Coupons ───────────────────────────────────────────────────────────────────
 

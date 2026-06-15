@@ -92,6 +92,7 @@ export default function ProductFormPage() {
       data.append('price', formData.price)
       data.append('quantity', formData.quantity)
       data.append('category_id', formData.category_id)
+      data.append('status', 'published')
       if (productImage) data.append('image', productImage)
       if (isEditing) data.append('_method', 'PUT') // Laravel nécessite ça pour PUT avec FormData
 

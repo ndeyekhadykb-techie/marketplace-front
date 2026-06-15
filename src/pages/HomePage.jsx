@@ -7,6 +7,7 @@ import toast from 'react-hot-toast'
 import { PageLoader } from '../components/ui/Spinner'
 import { ErrorMessage } from '../components/ui/ErrorMessage'
 import { Layout } from '../components/layout/Layout'
+import { addFavorite, removeFavorite } from '../services/favorites' // HomePage
 
 // ─── HeroBanner ───────────────────────────────────────────────────────────────
 function HeroBanner() {
@@ -59,6 +60,24 @@ function HeroBanner() {
 }
 
 // ─── CategoryCarousel ─────────────────────────────────────────────────────────
+
+function getCategoryImage(name) {
+  const images = {
+    'Électronique': 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=300&q=80',
+    'Loisirs':      'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=300&q=80',
+    'Maison':       'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=300&q=80',
+    'Mode':         'https://images.unsplash.com/photo-1445205170230-053b83016050?w=300&q=80',
+    'Alimentation': 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=300&q=80',
+    'Sport':        'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=300&q=80',
+    'Beauté':       'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=300&q=80',
+    'Livres':       'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=300&q=80',
+    'Jouets':       'https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=300&q=80',
+    'Informatique': 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=300&q=80',
+    'Téléphonie':   'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300&q=80',
+    'Automobile':   'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=300&q=80',
+  }
+  return images[name] ?? `https://placehold.co/176x128?text=${encodeURIComponent(name)}`
+}
 function CategoryCarousel({ categories }) {
   const scrollRef = useRef(null)
   const navigate = useNavigate()
@@ -110,10 +129,10 @@ function CategoryCarousel({ categories }) {
           >
             <div className="w-44 h-32 rounded-xl overflow-hidden mb-2 shadow-sm">
             <img
-                src={cat.icon ?? `https://placehold.co/176x128?text=${encodeURIComponent(cat.name)}`}
-                alt={cat.name}
-                onError={e => { e.target.src = `https://placehold.co/176x128?text=${encodeURIComponent(cat.name)}` }}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              src={cat.icon ?? getCategoryImage(cat.name)}
+              alt={cat.name}
+              onError={e => { e.target.src = `https://placehold.co/176x128?text=${encodeURIComponent(cat.name)}` }}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
             </div>
             <span className="text-xs font-semibold text-gray-700 uppercase tracking-wider group-hover:text-amber-500 transition-colors">
@@ -123,6 +142,41 @@ function CategoryCarousel({ categories }) {
         ))}
       </div>
     </section>
+  )
+}
+
+function FavoriteButton({ productId }) {
+  const [isFav, setIsFav] = useState(false)
+  const [loading, setLoading] = useState(false)
+
+  async function toggle(e) {
+    e.preventDefault()
+    try {
+      setLoading(true)
+      if (isFav) {
+        await removeFavorite(productId)
+        toast.success('Retiré des favoris')
+      } else {
+        await addFavorite(productId)
+        toast.success('Ajouté aux favoris !')
+      }
+      setIsFav(prev => !prev)
+    } catch {
+      toast.error('Erreur')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <button
+      onClick={toggle}
+      disabled={loading}
+      className="absolute top-3 right-3 w-8 h-8 bg-white/90 hover:bg-red-50
+        rounded-full flex items-center justify-center shadow-sm transition-colors"
+    >
+      {isFav ? '❤️' : '🤍'}
+    </button>
   )
 }
 
@@ -155,12 +209,11 @@ function ProductCard({ product }) {
   
             {/* Image */}
             <div className="relative overflow-hidden h-52">
-              <img
-                src={product.image ?? 'https://placehold.co/400x300?text=Produit'}
-                alt={product.title}
-                onError={e => { e.target.src = 'https://placehold.co/400x300?text=Produit' }}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              />
+            <img
+              src={(product.image ?? '').replace('http://localhost/', 'http://localhost:8000/') || 'https://placehold.co/400x300?text=Produit'}              alt={product.title}
+              onError={e => { e.target.src = 'https://placehold.co/400x300?text=Produit' }}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300" />
   
               {/* Badge promo — l'API nous dit directement si c'est en promo */}
@@ -168,6 +221,10 @@ function ProductCard({ product }) {
                 <span className="absolute top-3 left-3 bg-amber-400 text-white text-xs font-bold px-2 py-1 rounded-full">
                   Promo
                 </span>
+              )}
+              {/* Bouton favori — à ajouter */}
+              {user?.role === 'buyer' && (
+                <FavoriteButton productId={product.id} />
               )}
   
               {/* undefined ?? 1 signifie : si quantity n'existe pas, on suppose qu'il y en a */}
@@ -240,9 +297,11 @@ export default function HomePage() {
       setError(null)
       // On lance les deux appels en parallèle pour aller plus vite
       const [prodRes, catRes] = await Promise.all([
-        getProducts({ per_page: 12, status: 'published' }),
+        getProducts({ per_page: 12}),
         getCategories(),
       ])
+      console.log('produits:', prodRes.data)
+
       setProducts(prodRes.data.data ?? prodRes.data)
       setCategories(catRes.data.data ?? catRes.data)
     } catch {
