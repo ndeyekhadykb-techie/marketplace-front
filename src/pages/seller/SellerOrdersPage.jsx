@@ -23,22 +23,26 @@ export default function SellerOrdersPage() {
   }, [])
 
   const handleUpdateStatus = async (orderId, currentStatus) => {
-    const nextStatus = currentStatus === 'pending' ? 'shipped' : 'delivered'
+    const nextStatus =
+      currentStatus === 'pending' ? 'confirmed' :
+      currentStatus === 'confirmed' ? 'shipped' : 'delivered'
+
     try {
       await client.put(`/orders/${orderId}/status`, { status: nextStatus })
       setOrders(orders.map(o => o.id === orderId ? { ...o, status: nextStatus } : o))
       toast.success('Statut mis à jour !')
     } catch (err) {
-      console.error(err)
+      console.log('DATA:', JSON.stringify(err.response?.data))
       toast.error('Impossible de modifier le statut.')
     }
   }
 
   const statusConfig = {
-    pending:   { label: 'En attente',   classes: 'bg-amber-50 text-amber-600 border-amber-100' },
-    shipped:   { label: 'Expédié',     classes: 'bg-blue-50 text-blue-600 border-blue-100' },
-    delivered: { label: 'Livré',       classes: 'bg-green-50 text-green-600 border-green-100' },
-    cancelled: { label: 'Annulé',      classes: 'bg-gray-100 text-gray-500 border-gray-200' },
+    pending:   { label: 'En attente', classes: 'bg-amber-50 text-amber-600 border-amber-100' },
+    confirmed: { label: 'Confirmé',   classes: 'bg-purple-50 text-purple-600 border-purple-100' },
+    shipped:   { label: 'Expédié',    classes: 'bg-blue-50 text-blue-600 border-blue-100' },
+    delivered: { label: 'Livré',      classes: 'bg-green-50 text-green-600 border-green-100' },
+    cancelled: { label: 'Annulé',     classes: 'bg-gray-100 text-gray-500 border-gray-200' },
   }
 
   return (
@@ -90,7 +94,7 @@ export default function SellerOrdersPage() {
                     <p className="text-sm text-gray-500">
                       Client :{' '}
                       <span className="font-semibold text-gray-800">
-                        {order.user?.name || `#${order.user_id}`}
+                        {order.buyer?.name || order.user?.name || `#${order.user_id}`}
                       </span>
                     </p>
 
@@ -121,7 +125,8 @@ export default function SellerOrdersPage() {
                       style={{ backgroundColor: '#F5A623' }}
                       className="px-5 py-2.5 hover:opacity-90 text-white text-xs font-semibold rounded-xl transition-colors shadow-sm whitespace-nowrap"
                     >
-                      {order.status === 'pending' ? 'Marquer expédié' : 'Marquer livré'}
+                      {order.status === 'pending' ? 'Confirmer' :
+                       order.status === 'confirmed' ? 'Marquer expédié' : 'Marquer livré'}
                     </button>
                   )}
 
