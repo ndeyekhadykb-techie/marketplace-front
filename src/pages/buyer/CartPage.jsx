@@ -47,8 +47,6 @@ export default function CartPage() {
 
   return (
     <Layout>
-      <ToastContainer />
-
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Mon panier</h1>
         <div className="w-12 h-1 bg-amber-400 rounded-full mt-1" />
@@ -89,7 +87,7 @@ export default function CartPage() {
               >
                 {/* Image produit */}
                 <img
-                  src={item.product?.image ?? 'https://placehold.co/80x80?text=P'}
+                  src={(item.product?.image ?? '').replace('http://localhost/', 'http://localhost:8000/') || 'https://placehold.co/80x80?text=P'}
                   alt={item.product?.title}
                   onError={e => { e.target.src = 'https://placehold.co/80x80?text=P' }}
                   className="w-20 h-20 rounded-xl object-cover flex-none"
