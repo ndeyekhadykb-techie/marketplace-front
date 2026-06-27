@@ -37,9 +37,9 @@ export default function AdminDashboard() {
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {[
-            { label: 'Utilisateurs', value: loading ? '...' : stats?.total_users || 0, icon: <FiUsers size={20} />, bg: 'bg-blue-50', text: 'text-blue-600' },
-            { label: 'Produits', value: loading ? '...' : stats?.total_products || 0, icon: <FiPackage size={20} />, bg: 'bg-orange-50', text: 'text-orange-600' },
-            { label: 'Commandes', value: loading ? '...' : stats?.total_orders || 0, icon: <FiFileText size={20} />, bg: 'bg-green-50', text: 'text-green-600' },
+            { label: 'Utilisateurs', value: loading ? '...' : stats?.users_count || 0, icon: <FiUsers size={20} />, bg: 'bg-blue-50', text: 'text-blue-600' },
+            { label: 'Produits', value: loading ? '...' : stats?.products_count || 0, icon: <FiPackage size={20} />, bg: 'bg-orange-50', text: 'text-orange-600' },
+            { label: 'Commandes', value: loading ? '...' : stats?.orders_count || 0, icon: <FiFileText size={20} />, bg: 'bg-green-50', text: 'text-green-600' },
             { label: 'Revenus', value: loading ? '...' : `${parseFloat(stats?.total_revenue || 0).toLocaleString()} FCFA`, icon: <FiDollarSign size={20} />, bg: 'bg-yellow-50', text: 'text-yellow-600' },
           ].map((card, i) => (
             <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center justify-between">
@@ -57,20 +57,19 @@ export default function AdminDashboard() {
           <h2 className="text-base font-semibold text-gray-900 mb-4">Actions rapides</h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { label: 'Utilisateurs', to: '/admin/users', icon: <FiUsers size={22} className="text-gray-500 group-hover:text-amber-500 transition-colors" /> },
-              { label: 'Produits', to: '/admin/products', icon: <FiPackage size={22} className="text-gray-500 group-hover:text-amber-500 transition-colors" /> },
-              { label: 'Coupons', to: '/admin/coupons', icon: <FiPercent size={22} className="text-gray-500 group-hover:text-amber-500 transition-colors" /> },
+              { label: 'Utilisateurs', to: '/admin/users', icon: <FiUsers size={22} className="text-gray-500" /> },
+              { label: 'Produits', to: '/admin/products', icon: <FiPackage size={22} className="text-gray-500" /> },
+              { label: 'Coupons', to: '/admin/coupons', icon: <FiPercent size={22} className="text-gray-500" /> },
             ].map((action, i) => (
               <Link
                 key={i}
                 to={action.to}
-                className="group flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:bg-orange-50/60 transition-colors text-center"
-                style={{ '--tw-hover-border-color': '#F5A623' }}
+                className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:bg-yellow-50 transition-colors text-center"
                 onMouseEnter={(e) => e.currentTarget.style.borderColor = '#F5A623'}
                 onMouseLeave={(e) => e.currentTarget.style.borderColor = ''}
               >
                 {action.icon}
-                <span className="text-xs font-medium text-gray-600 group-hover:text-gray-900 transition-colors">{action.label}</span>
+                <span className="text-xs font-medium text-gray-600">{action.label}</span>
               </Link>
             ))}
           </div>
