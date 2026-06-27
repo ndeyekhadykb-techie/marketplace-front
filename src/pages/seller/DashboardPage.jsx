@@ -27,29 +27,29 @@ export default function DashboardPage() {
     fetchDashboard()
   }, [])
 
-  const cards = [
-    {
-      label: "Chiffre d'affaires",
-      value: loading ? '...' : `${stats.total_sales?.toLocaleString() || 0} FCFA`,
-      icon: <FiDollarSign size={22} className="text-green-600" />,
-      bg: 'bg-green-50',
-      border: 'border-green-100'
-    },
-    {
-      label: 'Produits en ligne',
-      value: loading ? '...' : `${stats.products_count || 0} articles`,
-      icon: <FiPackage size={22} className="text-orange-500" />,
-      bg: 'bg-orange-50',
-      border: 'border-orange-100'
-    },
-    {
-      label: 'Commandes à traiter',
-      value: loading ? '...' : `${stats.pending_orders_count || 0} en attente`,
-      icon: <FiShoppingBag size={22} className="text-yellow-500" />,
-      bg: 'bg-yellow-50',
-      border: 'border-yellow-100'
-    }
-  ]
+ const cards = [
+  {
+    label: "Chiffre d'affaires",
+    value: loading ? '...' : `${parseFloat(stats.total_sales || 0).toLocaleString()} FCFA`,
+    icon: <FiDollarSign size={22} className="text-green-600" />,
+    bg: 'bg-green-50',
+    border: 'border-green-100'
+  },
+  {
+    label: 'Produits en ligne',
+    value: loading ? '...' : `${stats.total_products || 0} articles`,
+    icon: <FiPackage size={22} className="text-orange-500" />,
+    bg: 'bg-orange-50',
+    border: 'border-orange-100'
+  },
+  {
+    label: 'Commandes à traiter',
+    value: loading ? '...' : `${stats.pending_orders || 0} en attente`,
+    icon: <FiShoppingBag size={22} className="text-yellow-500" />,
+    bg: 'bg-yellow-50',
+    border: 'border-yellow-100'
+  }
+]
 
   const actions = [
     { label: 'Mes produits', to: '/seller/products', icon: <FiPackage size={22} /> },
