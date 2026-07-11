@@ -7,16 +7,16 @@ import { Layout } from '../../components/layout/Layout'
 export default function ProductFormPage() {
   const navigate = useNavigate()
   const { id } = useParams() // si id existe → mode édition, sinon → mode création
-  
-  console.log('ID récupéré:', id)
+
+  // true en mode édition (URL du type /seller/products/12/edit), false en mode création
   const isEditing = !!id
 
-  const [loading, setLoading] = useState(false)
-  const [fetching, setFetching] = useState(isEditing)
+  const [loading, setLoading] = useState(false)       // true pendant l'envoi du formulaire
+  const [fetching, setFetching] = useState(isEditing)  // true pendant le chargement du produit à éditer
   const [error, setError] = useState(null)
   const [categories, setCategories] = useState([])
-  const [productImage, setProductImage] = useState(null)
-  const [preview, setPreview] = useState(null)
+  const [productImage, setProductImage] = useState(null) // fichier image sélectionné (objet File)
+  const [preview, setPreview] = useState(null)            // URL d'aperçu de l'image (locale ou distante)
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -25,7 +25,7 @@ export default function ProductFormPage() {
     category_id: ''
   })
 
-  // Charger les catégories
+  // Charge la liste des catégories pour le menu déroulant, une seule fois au montage
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -38,7 +38,7 @@ export default function ProductFormPage() {
     fetchCategories()
   }, [])
 
-  // Si mode édition → charger les données du produit
+  // En mode édition, précharge les données existantes du produit dans le formulaire
   useEffect(() => {
     if (!isEditing) return
     const fetchProduct = async () => {
@@ -52,6 +52,7 @@ export default function ProductFormPage() {
           quantity: p.quantity || 1,
           category_id: p.category_id || ''
         })
+        // Affiche l'image déjà en ligne comme aperçu tant qu'aucune nouvelle image n'est choisie
         if (p.image) setPreview(p.image)
       } catch (err) {
         console.error('Status:', err.response?.status)
@@ -64,11 +65,13 @@ export default function ProductFormPage() {
     fetchProduct()
   }, [id])
 
+  // Met à jour un champ texte/select du formulaire
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
   }
 
+  // Stocke le fichier image choisi et génère un aperçu local instantané (sans upload)
   const handleImageChange = (e) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -79,6 +82,7 @@ export default function ProductFormPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    // En création, l'image est obligatoire ; en édition, on peut garder l'image existante
     if (!isEditing && !productImage) {
       setError('Veuillez sélectionner une image pour votre produit.')
       return
@@ -87,6 +91,8 @@ export default function ProductFormPage() {
     setError(null)
 
     try {
+      // FormData obligatoire ici car on envoie potentiellement un fichier binaire (image),
+      // impossible avec un simple JSON.
       const data = new FormData()
       data.append('title', formData.title)
       data.append('description', formData.description)
@@ -94,9 +100,10 @@ export default function ProductFormPage() {
       data.append('quantity', formData.quantity)
       data.append('category_id', formData.category_id)
       data.append('status', 'published')
-      if (productImage) data.append('image', productImage)
-      if (isEditing) data.append('_method', 'PUT') // Laravel nécessite ça pour PUT avec FormData
+      if (productImage) data.append('image', productImage) // n'envoie l'image que si une nouvelle a été choisie
+      if (isEditing) data.append('_method', 'PUT') // Laravel nécessite ça pour PUT avec FormData (method spoofing)
 
+      // Toujours un POST côté HTTP : le _method=PUT ci-dessus fait la bascule côté Laravel
       await client.post(
         isEditing ? `/products/${id}` : '/products',
         data,
@@ -113,6 +120,7 @@ export default function ProductFormPage() {
     }
   }
 
+  // Écran de chargement pendant la récupération du produit existant (mode édition)
   if (fetching) {
     return (
       <Layout>
@@ -126,7 +134,7 @@ export default function ProductFormPage() {
   return (
     <Layout>
 
-      {/* Header */}
+      {/* Header : titre dynamique selon création/édition */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">
           {isEditing ? 'Modifier le produit' : 'Ajouter un produit'}
@@ -138,6 +146,7 @@ export default function ProductFormPage() {
 
       <div className="max-w-2xl space-y-5">
 
+        {/* Message d'erreur global (validation ou erreur serveur) */}
         {error && (
           <div className="p-4 bg-red-50 text-red-500 rounded-xl text-sm font-medium border border-red-100">
              {error}
@@ -146,7 +155,7 @@ export default function ProductFormPage() {
 
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
 
-          {/* Nom */}
+          {/* Nom du produit */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">Nom du produit *</label>
             <input
@@ -157,7 +166,7 @@ export default function ProductFormPage() {
             />
           </div>
 
-          {/* Image */}
+          {/* Image : zone d'upload ou aperçu avec bouton de suppression */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">Image du produit *</label>
             <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 bg-gray-50">
@@ -192,7 +201,7 @@ export default function ProductFormPage() {
             />
           </div>
 
-          {/* Prix & Quantité */}
+          {/* Prix & Quantité, côte à côte */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">Prix (FCFA) *</label>
@@ -214,7 +223,7 @@ export default function ProductFormPage() {
             </div>
           </div>
 
-          {/* Catégorie */}
+          {/* Catégorie, remplie dynamiquement depuis l'API */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">Catégorie *</label>
             <select
@@ -229,7 +238,7 @@ export default function ProductFormPage() {
             </select>
           </div>
 
-          {/* Boutons */}
+          {/* Boutons Annuler / Enregistrer */}
           <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
             <button
               type="button" onClick={() => navigate('/seller/products')}

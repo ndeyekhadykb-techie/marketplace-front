@@ -6,15 +6,17 @@ import { FiEdit2, FiTrash2 } from 'react-icons/fi'
 import { Layout } from '../../components/layout/Layout'
 
 export default function MyProductsPage() {
+  // Liste des produits appartenant au vendeur connecté
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Récupère uniquement les produits du vendeur connecté (pas tout le catalogue public)
     const fetchMyProducts = async () => {
       try {
         const res = await client.get('/products/my-products')
+        // Gère les deux formats possibles de réponse : tableau brut, ou { data: [...] } paginé
         const data = Array.isArray(res.data) ? res.data : (res.data?.data || [])
-        console.log('Premier produit:', data[0])
         setProducts(data)
       } catch (err) {
         console.error('Erreur:', err)
@@ -26,10 +28,12 @@ export default function MyProductsPage() {
     fetchMyProducts()
   }, [])
 
+  // Supprime un produit après confirmation de l'utilisateur
   const handleDelete = async (id, title) => {
     if (!confirm(`Supprimer définitivement "${title}" ?`)) return
     try {
       await client.delete(`/products/${id}`)
+      // Retire le produit de la liste locale sans recharger toute la page
       setProducts(products.filter(p => p.id !== id))
       toast.success(`"${title}" supprimé !`)
     } catch (err) {
@@ -41,7 +45,7 @@ export default function MyProductsPage() {
   return (
     <Layout>
 
-      {/* Header */}
+      {/* Header : titre + bouton d'ajout de produit */}
       <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Mon Catalogue</h1>
@@ -57,10 +61,12 @@ export default function MyProductsPage() {
       </div>
 
       {loading ? (
+        // État de chargement
         <div className="text-center py-16 text-gray-400 font-medium">
           Chargement de vos produits...
         </div>
       ) : products.length === 0 ? (
+        // État vide : aucun produit encore créé
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm text-center py-16">
           <span className="text-5xl block mb-4">📦</span>
           <p className="font-medium text-gray-500">Aucun produit en vente pour le moment.</p>
@@ -73,16 +79,19 @@ export default function MyProductsPage() {
           </Link>
         </div>
       ) : (
+        // Grille des produits du vendeur
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
           {products.map((product) => (
             <div
               key={product.id}
               className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex flex-col"
             >
-              {/* Image */}
+              {/* Image du produit */}
               <div className="h-44 bg-gray-50 rounded-t-2xl overflow-hidden border-b border-gray-100 flex items-center justify-center">
                 {product.image ? (
                   <img
+                    // Remplace l'hôte renvoyé par le backend (APP_URL sans port) par l'URL
+                    // réelle du serveur Laravel en local (port 8000), sinon l'image casse.
                     src={product.image?.replace('http://localhost/', 'http://localhost:8000/')}
                     alt={product.title}
                     className="w-full h-full object-cover"
@@ -92,7 +101,7 @@ export default function MyProductsPage() {
                 )}
               </div>
 
-              {/* Infos */}
+              {/* Infos produit : titre, description, stock, prix */}
               <div className="p-4 flex flex-col flex-1 gap-3">
                 <div>
                   <h3 className="font-bold text-gray-900 truncate">{product.title}</h3>
@@ -108,7 +117,7 @@ export default function MyProductsPage() {
                   </p>
                 </div>
 
-                {/* Actions */}
+                {/* Actions : modifier ou supprimer le produit */}
                 <div className="grid grid-cols-2 gap-2 pt-3 border-t border-gray-100">
                   <Link
                     to={`/seller/products/${product.id}/edit`}

@@ -5,9 +5,11 @@ import { FiFileText } from 'react-icons/fi'
 import { Layout } from '../../components/layout/Layout'
 
 export default function SellerOrdersPage() {
+  // Commandes contenant au moins un produit du vendeur connecté
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
 
+  // Récupère les commandes du vendeur au chargement de la page
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -23,6 +25,8 @@ export default function SellerOrdersPage() {
     fetchOrders()
   }, [])
 
+  // Fait avancer une commande d'une étape dans son cycle de vie :
+  // pending → confirmed → shipped → delivered
   const handleUpdateStatus = async (orderId, currentStatus) => {
     const nextStatus =
       currentStatus === 'pending' ? 'confirmed' :
@@ -30,14 +34,16 @@ export default function SellerOrdersPage() {
 
     try {
       await client.put(`/orders/${orderId}/status`, { status: nextStatus })
+      // Met à jour uniquement la commande concernée dans le state local (pas de refetch complet)
       setOrders(orders.map(o => o.id === orderId ? { ...o, status: nextStatus } : o))
       toast.success('Statut mis à jour !')
     } catch (err) {
-      console.log('DATA:', JSON.stringify(err.response?.data))
+      console.error('Erreur mise à jour statut:', err.response?.data)
       toast.error('Impossible de modifier le statut.')
     }
   }
 
+  // Libellé + couleur affichés pour chaque statut de commande possible
   const statusConfig = {
     pending:   { label: 'En attente', classes: 'bg-amber-50 text-amber-600 border-amber-100' },
     confirmed: { label: 'Confirmé',   classes: 'bg-purple-50 text-purple-600 border-purple-100' },
@@ -62,6 +68,7 @@ export default function SellerOrdersPage() {
           Chargement des commandes...
         </div>
       ) : orders.length === 0 ? (
+        // Aucune commande reçue pour le moment
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm text-center py-16 flex flex-col items-center justify-center gap-3">
           <FiFileText size={48} className="text-gray-300" />
           <p className="text-gray-500 font-medium">Aucune commande reçue pour le moment.</p>
@@ -69,6 +76,7 @@ export default function SellerOrdersPage() {
       ) : (
         <div className="space-y-4">
           {orders.map((order) => {
+            // Retombe sur "pending" si le statut renvoyé par l'API n'a pas de config connue
             const status = statusConfig[order.status] || statusConfig.pending
             return (
               <div
@@ -77,7 +85,7 @@ export default function SellerOrdersPage() {
               >
                 <div className="space-y-2">
 
-                  {/* ID + Statut */}
+                  {/* Numéro de commande + badge de statut */}
                   <div className="flex items-center gap-3 flex-wrap">
                     <span className="text-sm font-mono font-bold bg-gray-100 text-gray-700 px-2.5 py-1 rounded-lg">
                       #{order.id}
@@ -87,7 +95,7 @@ export default function SellerOrdersPage() {
                     </span>
                   </div>
 
-                  {/* Client */}
+                  {/* Nom du client (avec repli sur l'id si le nom n'est pas fourni) */}
                   <p className="text-sm text-gray-500">
                     Client :{' '}
                     <span className="font-semibold text-gray-800">
@@ -95,7 +103,7 @@ export default function SellerOrdersPage() {
                     </span>
                   </p>
 
-                  {/* Produits */}
+                  {/* Liste des produits commandés (uniquement ceux du vendeur) */}
                   {order.items?.length > 0 && (
                     <div className="flex flex-wrap gap-2">
                       {order.items.map((item, i) => (
@@ -109,13 +117,13 @@ export default function SellerOrdersPage() {
                     </div>
                   )}
 
-                  {/* Total */}
+                  {/* Montant total de la commande */}
                   <p style={{ color: '#F5A623' }} className="text-lg font-black">
                     {parseFloat(order.total_amount || 0).toLocaleString()} FCFA
                   </p>
                 </div>
 
-                {/* Bouton action */}
+                {/* Bouton pour faire avancer le statut, masqué si la commande est terminée/annulée */}
                 {order.status !== 'delivered' && order.status !== 'cancelled' && (
                   <button
                     onClick={() => handleUpdateStatus(order.id, order.status)}

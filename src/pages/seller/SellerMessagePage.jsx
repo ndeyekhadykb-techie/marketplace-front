@@ -6,20 +6,21 @@ import { useAuth } from '../../context/AuthContext'
 import { Layout } from '../../components/layout/Layout'
 
 export default function SellerMessagePage() {
-  const { user } = useAuth()
-  const [conversations, setConversations] = useState([])
-  const [messages, setMessages] = useState([])
-  const [activeConv, setActiveConv] = useState(null)
-  const [replyText, setReplyText] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [sending, setSending] = useState(false)
-  const bottomRef = useRef(null)
+  const { user } = useAuth() // utilisateur connecté, sert à savoir si un message est "de moi" ou reçu
+  const [conversations, setConversations] = useState([])   // liste des conversations (une par interlocuteur)
+  const [messages, setMessages] = useState([])              // messages de la conversation actuellement ouverte
+  const [activeConv, setActiveConv] = useState(null)        // conversation actuellement sélectionnée
+  const [replyText, setReplyText] = useState('')            // contenu du champ de réponse
+  const [loading, setLoading] = useState(true)               // chargement de la liste des conversations
+  const [sending, setSending] = useState(false)               // envoi du message en cours
+  const bottomRef = useRef(null)                              // référence pour auto-scroll vers le dernier message
 
+  // Charge la liste des conversations au montage de la page, et ouvre la première par défaut
   useEffect(() => {
     const fetchConversations = async () => {
       try {
         const { data } = await getConversations()
-        const convs = data.data ?? data
+        const convs = data.data ?? data // gère le format paginé { data: [...] } ou tableau brut
         setConversations(convs)
         if (convs.length > 0) setActiveConv(convs[0])
       } catch (err) {
@@ -32,6 +33,7 @@ export default function SellerMessagePage() {
     fetchConversations()
   }, [])
 
+  // Recharge les messages à chaque changement de conversation active
   useEffect(() => {
     if (!activeConv) return
     const fetchMessages = async () => {
@@ -39,7 +41,9 @@ export default function SellerMessagePage() {
         const userId = activeConv.user?.id
         const { data } = await getMessages(userId)
         const list = data.data ?? data
-        setMessages([...list].reverse())   // ← ajouté : du plus ancien au plus récent
+        // L'API renvoie les messages du plus récent au plus ancien ; on inverse pour
+        // afficher la conversation dans l'ordre chronologique (comme une vraie messagerie)
+        setMessages([...list].reverse())
       } catch (err) {
         console.error('Erreur messages:', err)
         toast.error('Impossible de charger les messages')
@@ -48,10 +52,13 @@ export default function SellerMessagePage() {
     fetchMessages()
   }, [activeConv])
 
+  // Fait défiler automatiquement vers le bas à chaque nouveau message affiché
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
+  // Envoie une réponse dans la conversation active, puis rafraîchit messages + liste de conversations
+  // (le rafraîchissement de la liste met à jour le "dernier message" et le compteur de non-lus affichés à gauche)
   const handleSend = async (e) => {
     e.preventDefault()
     if (!replyText.trim() || !activeConv) return
@@ -86,7 +93,7 @@ export default function SellerMessagePage() {
 
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm flex overflow-hidden h-[600px]">
 
-        {/* Liste conversations */}
+        {/* Colonne de gauche : liste des conversations */}
         <div className="w-1/3 border-r border-gray-100 flex flex-col">
           <div className="p-4 border-b border-gray-100">
             <p className="font-semibold text-gray-900 text-sm">Discussions récentes</p>
@@ -108,6 +115,8 @@ export default function SellerMessagePage() {
                 const isActive = activeConv?.user?.id === other.id
                 return (
                   <button
+                    // Clé composée : un même interlocuteur peut avoir plusieurs conversations
+                    // liées à des produits différents (conv.product?.id)
                     key={`${other.id}-${conv.product?.id ?? 0}`}
                     onClick={() => setActiveConv(conv)}
                     className={`w-full p-4 text-left flex flex-col gap-1 border-b border-gray-50 transition-colors ${
@@ -121,6 +130,7 @@ export default function SellerMessagePage() {
                       <span className="font-semibold text-gray-900 text-sm">
                         {other.name || 'Utilisateur'}
                       </span>
+                      {/* Badge du nombre de messages non lus, affiché seulement s'il y en a */}
                       {conv.unread_count > 0 && (
                         <span
                           style={{ backgroundColor: '#F5A623' }}
@@ -140,10 +150,11 @@ export default function SellerMessagePage() {
           </div>
         </div>
 
-        {/* Zone de chat */}
+        {/* Colonne de droite : zone de chat de la conversation sélectionnée */}
         <div className="flex-1 flex flex-col">
           {activeConv ? (
             <>
+              {/* En-tête : avatar (initiale) + nom + email de l'interlocuteur */}
               <div className="p-4 border-b border-gray-100 bg-white flex items-center gap-3">
                 <div
                   style={{ backgroundColor: '#FFF6E6', color: '#F5A623' }}
@@ -161,6 +172,7 @@ export default function SellerMessagePage() {
                 </div>
               </div>
 
+              {/* Historique des messages, alignés à droite (moi) ou à gauche (interlocuteur) */}
               <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
                 {messages.length === 0 ? (
                   <div className="text-center text-gray-400 text-sm py-8">
@@ -188,9 +200,11 @@ export default function SellerMessagePage() {
                     )
                   })
                 )}
+                {/* Point d'ancrage invisible utilisé pour l'auto-scroll */}
                 <div ref={bottomRef} />
               </div>
 
+              {/* Formulaire d'envoi de réponse */}
               <form
                 onSubmit={handleSend}
                 className="p-4 border-t border-gray-100 bg-white flex gap-3"
@@ -214,6 +228,7 @@ export default function SellerMessagePage() {
               </form>
             </>
           ) : (
+            // Aucune conversation sélectionnée (ou aucune conversation existante)
             <div className="flex-1 flex flex-col items-center justify-center text-gray-400 gap-2">
               <FiMessageSquare size={40} className="text-gray-300" />
               <p className="text-sm">Sélectionnez une conversation</p>

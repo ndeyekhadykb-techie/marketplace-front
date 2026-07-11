@@ -4,9 +4,11 @@ import client from '../../api/client'
 import { FiUsers, FiPackage, FiFileText, FiDollarSign, FiPercent } from 'react-icons/fi'
 
 export default function AdminDashboard() {
+  // Statistiques globales de la marketplace (null tant qu'elles n'ont pas encore été chargées)
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
 
+  // Récupère les stats globales au chargement de la page
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -34,7 +36,7 @@ export default function AdminDashboard() {
 
       <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
 
-        {/* Stats */}
+        {/* Cartes de statistiques : utilisateurs, produits, commandes, revenus */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {[
             { label: 'Utilisateurs', value: loading ? '...' : stats?.users_count || 0, icon: <FiUsers size={20} />, bg: 'bg-blue-50', text: 'text-blue-600' },
@@ -52,7 +54,7 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        {/* Actions rapides */}
+        {/* Raccourcis vers les 3 pages de gestion admin */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
           <h2 className="text-base font-semibold text-gray-900 mb-4">Actions rapides</h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -65,6 +67,8 @@ export default function AdminDashboard() {
                 key={i}
                 to={action.to}
                 className="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-100 hover:bg-yellow-50 transition-colors text-center"
+                // Bordure colorée au survol, gérée en JS car la couleur (#F5A623) est une valeur
+                // custom hors palette Tailwind par défaut
                 onMouseEnter={(e) => e.currentTarget.style.borderColor = '#F5A623'}
                 onMouseLeave={(e) => e.currentTarget.style.borderColor = ''}
               >
