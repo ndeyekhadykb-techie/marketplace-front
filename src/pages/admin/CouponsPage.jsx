@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
-import client from '../../api/client'
+import { getCoupons, createCoupon, deleteCoupon } from '../../services/admin'
 import { FiPercent } from 'react-icons/fi'
 
 export default function CouponsPage() {
@@ -9,11 +9,11 @@ export default function CouponsPage() {
   const [showForm, setShowForm] = useState(false)
   const [formData, setFormData] = useState({
     code: '',
-    discount_type: 'percentage',
-    discount_value: '',
-    min_order_amount: '',
-    max_uses: '',
-    expires_at: ''
+    type: 'percent',
+    value: '',
+    min_order_total: '',
+    usage_limit: '',
+    ends_at: ''
   })
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export default function CouponsPage() {
 
   const fetchCoupons = async () => {
     try {
-      const res = await client.get('/admin/coupons')
+      const res = await getCoupons()
       setCoupons(res.data?.data || res.data || [])
     } catch (err) {
       toast.error('Impossible de charger les coupons.')
@@ -32,17 +32,27 @@ export default function CouponsPage() {
   }
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
+    const { name, value } = e.target
+    const finalValue = name === 'code' ? value.toUpperCase() : value
+    setFormData({ ...formData, [name]: finalValue })
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (formData.type === 'percent' && Number(formData.value) > 100) {
+      toast.error('Un pourcentage ne peut pas dépasser 100.')
+      return
+    }
     try {
-      const res = await client.post('/admin/coupons', formData)
-      setCoupons([...coupons, res.data])
+      const payload = {
+        ...formData,
+        ends_at: formData.ends_at ? `${formData.ends_at} 23:59:59` : undefined,
+      }
+      const res = await createCoupon(payload)
+      setCoupons([...coupons, res.data?.data || res.data])
       toast.success('Coupon créé !')
       setShowForm(false)
-      setFormData({ code: '', discount_type: 'percentage', discount_value: '', min_order_amount: '', max_uses: '', expires_at: '' })
+      setFormData({ code: '', type: 'percent', value: '', min_order_total: '', usage_limit: '', ends_at: '' })
     } catch (err) {
       toast.error(err.response?.data?.message || 'Erreur lors de la création.')
     }
@@ -51,7 +61,7 @@ export default function CouponsPage() {
   const handleDelete = async (id, code) => {
     if (!confirm(`Supprimer le coupon "${code}" ?`)) return
     try {
-      await client.delete(`/admin/coupons/${id}`)
+      await deleteCoupon(id)
       setCoupons(coupons.filter(c => c.id !== id))
       toast.success(`Coupon "${code}" supprimé !`)
     } catch (err) {
@@ -98,18 +108,18 @@ export default function CouponsPage() {
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Type de réduction *</label>
                 <select
-                  name="discount_type" value={formData.discount_type} onChange={handleChange}
+                  name="type" value={formData.type} onChange={handleChange}
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 transition-colors"
                   style={{ '--tw-ring-color': 'rgba(245, 166, 35, 0.2)', focusBorderColor: '#F5A623' }}
                 >
-                  <option value="percentage">Pourcentage (%)</option>
+                  <option value="percent">Pourcentage (%)</option>
                   <option value="fixed">Montant fixe (FCFA)</option>
                 </select>
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Valeur *</label>
                 <input
-                  type="number" name="discount_value" value={formData.discount_value} onChange={handleChange}
+                  type="number" name="value" value={formData.value} onChange={handleChange}
                   placeholder="Ex: 20"
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 transition-colors"
                   style={{ '--tw-ring-color': 'rgba(245, 166, 35, 0.2)', focusBorderColor: '#F5A623' }}
@@ -119,7 +129,7 @@ export default function CouponsPage() {
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Montant minimum</label>
                 <input
-                  type="number" name="min_order_amount" value={formData.min_order_amount} onChange={handleChange}
+                  type="number" name="min_order_total" value={formData.min_order_total} onChange={handleChange}
                   placeholder="Ex: 5000"
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 transition-colors"
                   style={{ '--tw-ring-color': 'rgba(245, 166, 35, 0.2)', focusBorderColor: '#F5A623' }}
@@ -128,7 +138,7 @@ export default function CouponsPage() {
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Nombre max d'utilisations</label>
                 <input
-                  type="number" name="max_uses" value={formData.max_uses} onChange={handleChange}
+                  type="number" name="usage_limit" value={formData.usage_limit} onChange={handleChange}
                   placeholder="Ex: 100"
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 transition-colors"
                   style={{ '--tw-ring-color': 'rgba(245, 166, 35, 0.2)', focusBorderColor: '#F5A623' }}
@@ -137,7 +147,7 @@ export default function CouponsPage() {
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Date d'expiration</label>
                 <input
-                  type="date" name="expires_at" value={formData.expires_at} onChange={handleChange}
+                  type="date" name="ends_at" value={formData.ends_at} onChange={handleChange}
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 transition-colors"
                   style={{ '--tw-ring-color': 'rgba(245, 166, 35, 0.2)', focusBorderColor: '#F5A623' }}
                 />
@@ -187,16 +197,16 @@ export default function CouponsPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-700">
-                      {coupon.discount_type === 'percentage'
-                        ? `${coupon.discount_value}%`
-                        : `${parseFloat(coupon.discount_value).toLocaleString()} FCFA`
+                      {coupon.type === 'percent'
+                        ? `${coupon.value}%`
+                        : `${parseFloat(coupon.value).toLocaleString()} FCFA`
                       }
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500">
-                      {coupon.used_count || 0} / {coupon.max_uses || '∞'}
+                      {coupon.times_used || 0} / {coupon.usage_limit || '∞'}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500">
-                      {coupon.expires_at ? new Date(coupon.expires_at).toLocaleDateString('fr-FR') : 'Jamais'}
+                      {coupon.ends_at ? new Date(coupon.ends_at).toLocaleDateString('fr-FR') : 'Jamais'}
                     </td>
                     <td className="px-6 py-4">
                       <button

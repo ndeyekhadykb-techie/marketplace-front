@@ -196,7 +196,7 @@ export default function OrderDetailPage() {
               <div className="flex justify-between text-gray-600">
                 <span>Sous-total</span>
                 <span>
-                  {Number(order.total_amount - order.shipping_cost + order.discount_amount).toLocaleString('fr-FR')} FCFA
+                  {(Number(order.total_amount) - Number(order.shipping_cost) + Number(order.discount_amount)).toLocaleString('fr-FR')} FCFA
                 </span>
               </div>
 

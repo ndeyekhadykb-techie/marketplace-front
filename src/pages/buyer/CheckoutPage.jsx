@@ -53,7 +53,8 @@ export default function CheckoutPage() {
 
   function handleChange(e) {
     const { name, value } = e.target
-    setForm(prev => ({ ...prev, [name]: value }))
+    const finalValue = name === 'coupon_code' ? value.toUpperCase() : value
+    setForm(prev => ({ ...prev, [name]: finalValue }))
     if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }))
   }
 
