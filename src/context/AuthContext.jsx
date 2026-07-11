@@ -45,8 +45,16 @@ const register = async (userData) => {
     setUser(null)
   }
 }
+
+// Permet de resynchroniser le user en mémoire + localStorage
+// (utilisé après une modification du profil, sans repasser par login)
+const updateUser = (updatedUser) => {
+  localStorage.setItem('user', JSON.stringify(updatedUser))
+  setUser(updatedUser)
+}
+
 return (
-  <AuthContext.Provider value={{ user, login, register, logout }}>
+  <AuthContext.Provider value={{ user, login, register, logout,updateUser }}>
     {children}
   </AuthContext.Provider>
 )

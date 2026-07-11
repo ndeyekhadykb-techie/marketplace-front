@@ -22,8 +22,9 @@ import OrderDetailPage from './pages/buyer/OrderDetailPage'
 import FavoritesPage from './pages/buyer/FavoritesPage'
 import MessagesPage from './pages/buyer/MessagesPage'
 import ProductDetailPage from './pages/products/ProductDetailPage'
-
-
+import ProfilePage from './pages/ProfilePage'
+import CategoriesPage from './pages/CategoriesPage'
+import SearchResultsPage from './pages/SearchResultsPage'
 
 
 // On améliore la fonction pour qu'elle accepte "allowedRoles"
@@ -58,6 +59,25 @@ export default function App() {
       <Route path="/" element={
         <ProtectedRoute>
           <HomePage />
+        </ProtectedRoute>
+      } />
+
+      {/* Profil — accessible à tous les rôles connectés (buyer, seller, admin) */}
+      <Route path="/profile" element={
+        <ProtectedRoute>
+          <ProfilePage />
+        </ProtectedRoute>
+      } />
+
+      {/* Catégories et recherche — accessibles à tous les rôles connectés */}
+      <Route path="/categories" element={
+        <ProtectedRoute>
+          <CategoriesPage />
+        </ProtectedRoute>
+      } />
+      <Route path="/search" element={
+        <ProtectedRoute>
+          <SearchResultsPage />
         </ProtectedRoute>
       } />
 
@@ -176,6 +196,7 @@ export default function App() {
         <ProductDetailPage />
       </ProtectedRoute>
     } />
+
 
 
     </Routes>

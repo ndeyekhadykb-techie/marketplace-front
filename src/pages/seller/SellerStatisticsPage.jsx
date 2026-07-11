@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import client from '../../api/client'
 import { FiDollarSign, FiShoppingBag, FiStar, FiTrendingUp, FiEye, FiPercent } from 'react-icons/fi'
+import { Layout } from '../../components/layout/Layout'
 
 export default function SellerStatisticsPage() {
   const [dashboard, setDashboard] = useState(null)
@@ -26,23 +27,23 @@ export default function SellerStatisticsPage() {
   }, [])
 
   if (loading) return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center text-gray-400">
-      Chargement des statistiques...
-    </div>
+    <Layout>
+      <div className="flex items-center justify-center text-gray-400 py-16">
+        Chargement des statistiques...
+      </div>
+    </Layout>
   )
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <Layout>
 
       {/* Header */}
-      <div className="bg-white border-b border-gray-100 px-6 py-5">
-        <div className="max-w-5xl mx-auto">
-          <h1 className="text-2xl font-bold text-gray-900">Statistiques</h1>
-          <p className="text-sm text-gray-400 mt-1">Analysez vos performances de vente.</p>
-        </div>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Statistiques</h1>
+        <p className="text-sm text-gray-400 mt-1">Analysez vos performances de vente.</p>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
+      <div className="space-y-6">
 
         {/* Chiffres clés dashboard */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -139,6 +140,6 @@ export default function SellerStatisticsPage() {
         )}
 
       </div>
-    </div>
+    </Layout>
   )
 }

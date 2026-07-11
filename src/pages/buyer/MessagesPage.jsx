@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { getConversations, getMessages, sendMessage } from '../../services/messages'
+import { getSeller } from '../../services/seller'
 import { useAuth } from '../../context/AuthContext'
 import { PageLoader } from '../../components/ui/Spinner'
 import { Layout } from '../../components/layout/Layout'
@@ -20,7 +21,6 @@ export default function MessagesPage() {
 
   const messagesEndRef = useRef(null)
 
-  // Scroll automatique vers le bas quand nouveaux messages
   function scrollToBottom() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
@@ -29,23 +29,6 @@ export default function MessagesPage() {
     scrollToBottom()
   }, [messages])
 
-  // Charger les conversations au montage
-  async function loadConversations() {
-    try {
-      setLoadingConvs(true)
-      const { data } = await getConversations()
-      setConversations(data.data ?? data)
-    } catch {
-      toast.error('Impossible de charger les conversations')
-    } finally {
-      setLoadingConvs(false)
-    }
-  }
-
-  useEffect(() => {
-    loadConversations()
-  }, [])
-
   // Charger les messages d'une conversation
   async function loadMessages(otherUser) {
     try {
@@ -53,13 +36,50 @@ export default function MessagesPage() {
       setSelectedUser(otherUser)
       setSearchParams({ with: otherUser.id })
       const { data } = await getMessages(otherUser.id)
-      setMessages(data.data ?? data)
+      const list = data.data ?? data
+      setMessages([...list].reverse())   // ← ajouté
     } catch {
       toast.error('Impossible de charger les messages')
     } finally {
       setLoadingMsgs(false)
     }
   }
+
+  // Charger les conversations au montage, puis gérer ?with=<id>
+  // (ex: bouton "Contacter le vendeur" depuis une fiche produit)
+  useEffect(() => {
+    async function init() {
+      let convs = []
+      try {
+        setLoadingConvs(true)
+        const { data } = await getConversations()
+        convs = data.data ?? data
+        setConversations(convs)
+      } catch {
+        toast.error('Impossible de charger les conversations')
+      } finally {
+        setLoadingConvs(false)
+      }
+
+      const withId = searchParams.get('with')
+      if (!withId) return
+
+      const existing = convs.find(c => String(c.user?.id) === String(withId))
+      if (existing && existing.user) {
+        loadMessages(existing.user)
+        return
+      }
+
+      try {
+        const { data: seller } = await getSeller(withId)
+        loadMessages(seller)
+      } catch {
+        toast.error('Impossible de charger cet utilisateur')
+      }
+    }
+    init()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Envoyer un message
   async function handleSend(e) {
@@ -72,8 +92,9 @@ export default function MessagesPage() {
         content: content.trim(),
       })
       setContent('')
-      // Recharger les messages pour afficher le nouveau
       await loadMessages(selectedUser)
+      const { data } = await getConversations()
+      setConversations(data.data ?? data)
     } catch {
       toast.error("Erreur lors de l'envoi")
     } finally {
@@ -108,18 +129,16 @@ export default function MessagesPage() {
           ) : (
             <div className="flex-1 overflow-y-auto">
               {conversations.map(conv => {
-                // L'autre personne dans la conversation
-                const other = conv.sender?.id === user?.id ? conv.recipient : conv.sender
+                const other = conv.user
                 const isSelected = selectedUser?.id === other?.id
 
                 return (
                   <button
-                    key={conv.id}
+                    key={`${other?.id}-${conv.product?.id ?? 0}`}
                     onClick={() => loadMessages(other)}
                     className={`w-full p-4 flex items-center gap-3 hover:bg-gray-50 transition-colors text-left border-b border-gray-50
                       ${isSelected ? 'bg-amber-50 border-l-2 border-l-amber-400' : ''}`}
                   >
-                    {/* Avatar */}
                     <div className="w-10 h-10 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center font-bold text-sm flex-none">
                       {other?.name?.[0]?.toUpperCase()}
                     </div>
@@ -128,12 +147,13 @@ export default function MessagesPage() {
                         {other?.name}
                       </p>
                       <p className="text-xs text-gray-400 truncate mt-0.5">
-                        {conv.content}
+                        {conv.last_message?.content}
                       </p>
                     </div>
-                    {/* Badge non lu */}
-                    {!conv.is_read && conv.recipient_id === user?.id && (
-                      <span className="w-2 h-2 bg-amber-400 rounded-full flex-none" />
+                    {conv.unread_count > 0 && (
+                      <span className="min-w-[1.25rem] h-5 px-1 bg-amber-400 text-white text-xs rounded-full flex items-center justify-center font-bold flex-none">
+                        {conv.unread_count}
+                      </span>
                     )}
                   </button>
                 )
@@ -145,14 +165,12 @@ export default function MessagesPage() {
         {/* ── Zone de messages ── */}
         <div className="flex-1 flex flex-col">
           {!selectedUser ? (
-            // Aucune conversation sélectionnée
             <div className="flex-1 flex flex-col items-center justify-center text-gray-400">
               <p className="text-4xl mb-3">💬</p>
               <p className="text-sm">Sélectionnez une conversation</p>
             </div>
           ) : (
             <>
-              {/* Header conversation */}
               <div className="p-4 border-b border-gray-100 flex items-center gap-3">
                 <div className="w-9 h-9 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center font-bold text-sm">
                   {selectedUser.name?.[0]?.toUpperCase()}
@@ -162,7 +180,6 @@ export default function MessagesPage() {
                 </span>
               </div>
 
-              {/* Messages */}
               <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
                 {loadingMsgs ? (
                   <div className="flex-1 flex items-center justify-center">
@@ -174,7 +191,7 @@ export default function MessagesPage() {
                   </div>
                 ) : (
                   messages.map(msg => {
-                    const isMe = msg.sender_id === user?.id
+                    const isMe = msg.sender?.id === user?.id
                     return (
                       <div
                         key={msg.id}
@@ -202,7 +219,6 @@ export default function MessagesPage() {
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Input message */}
               <form
                 onSubmit={handleSend}
                 className="p-4 border-t border-gray-100 flex gap-2"

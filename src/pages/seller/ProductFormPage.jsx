@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import client from '../../api/client'
 import { FiTrash2 } from 'react-icons/fi'
+import { Layout } from '../../components/layout/Layout'
 
 export default function ProductFormPage() {
   const navigate = useNavigate()
@@ -114,28 +115,28 @@ export default function ProductFormPage() {
 
   if (fetching) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center text-gray-400">
-        Chargement du produit...
-      </div>
+      <Layout>
+        <div className="flex items-center justify-center text-gray-400 py-16">
+          Chargement du produit...
+        </div>
+      </Layout>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <Layout>
 
       {/* Header */}
-      <div className="bg-white border-b border-gray-100 px-6 py-5">
-        <div className="max-w-2xl mx-auto">
-          <h1 className="text-2xl font-bold text-gray-900">
-            {isEditing ? 'Modifier le produit' : 'Ajouter un produit'}
-          </h1>
-          <p className="text-sm text-gray-400 mt-1">
-            {isEditing ? 'Modifiez les informations de votre produit.' : 'Remplissez les informations pour le mettre en ligne.'}
-          </p>
-        </div>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">
+          {isEditing ? 'Modifier le produit' : 'Ajouter un produit'}
+        </h1>
+        <p className="text-sm text-gray-400 mt-1">
+          {isEditing ? 'Modifiez les informations de votre produit.' : 'Remplissez les informations pour le mettre en ligne.'}
+        </p>
       </div>
 
-      <div className="max-w-2xl mx-auto px-6 py-8 space-y-5">
+      <div className="max-w-2xl space-y-5">
 
         {error && (
           <div className="p-4 bg-red-50 text-red-500 rounded-xl text-sm font-medium border border-red-100">
@@ -247,6 +248,6 @@ export default function ProductFormPage() {
 
         </div>
       </div>
-    </div>
+    </Layout>
   )
 }

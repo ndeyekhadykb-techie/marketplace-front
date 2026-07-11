@@ -9,3 +9,10 @@ export const getDashboard = () =>
 // Contient : graphiques de ventes, produits les plus vendus...
 export const getStatistics = () =>
   client.get('/seller/statistics')
+
+// Récupère le profil public d'un vendeur par son id
+// Utilisé notamment pour pré-remplir une conversation quand un acheteur
+// contacte un vendeur pour la première fois (pas encore d'historique de messages)
+// Réponse : objet plat { id, name, email, bio, profile_image, phone, city, rating, ... }
+export const getSeller = (userId) =>
+  client.get(`/sellers/${userId}`)

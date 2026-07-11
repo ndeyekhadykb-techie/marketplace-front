@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import client from '../../api/client'
 import { FiDollarSign, FiPackage, FiShoppingBag, FiClipboard, FiMessageSquare, FiBarChart2 } from 'react-icons/fi'
+import { Layout } from '../../components/layout/Layout'
 
 export default function DashboardPage() {
   const { user } = useAuth()
@@ -59,29 +60,27 @@ export default function DashboardPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <Layout>
 
       {/* Header */}
-      <div className="bg-white border-b border-gray-100 px-6 py-5">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              Bonjour, <span className="text-yellow-500">{user?.name || 'Vendeur'}</span>
-            </h1>
-            <p className="text-sm text-gray-400 mt-1">
-              Suivez vos ventes et gérez vos produits
-            </p>
-          </div>
-          <Link
-            to="/seller/products/new"
-            className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 text-sm font-semibold px-5 py-3 rounded-xl transition-colors text-center"
-          >
-            + Ajouter un produit
-          </Link>
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Bonjour, <span className="text-yellow-500">{user?.name || 'Vendeur'}</span>
+          </h1>
+          <p className="text-sm text-gray-400 mt-1">
+            Suivez vos ventes et gérez vos produits
+          </p>
         </div>
+        <Link
+          to="/seller/products/new"
+          className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 text-sm font-semibold px-5 py-3 rounded-xl transition-colors text-center"
+        >
+          + Ajouter un produit
+        </Link>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 py-8 space-y-8">
+      <div className="space-y-8">
 
         {/* Stats cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
@@ -121,6 +120,6 @@ export default function DashboardPage() {
         </div>
 
       </div>
-    </div>
+    </Layout>
   )
 }
